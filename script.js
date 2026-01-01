@@ -1,5 +1,5 @@
 // ==========================================
-// 1. 효빈님의 편지 내용 및 설정
+// 1. 편지 내용 설정
 // ==========================================
 const letterContent = [
     { text: "할머니, 안녕하세요!! 할머니의 막내 아들 둘째 딸인 효빈이에요!" },
@@ -10,7 +10,7 @@ const letterContent = [
     { text: "그럼에도 저희의 어린 시절을 부족함 없이 예쁘게 꽃 피워주셔서 감사합니다." },
     { text: "매일 전화한다고 해놓고 가끔 해서 죄송해요. 앞으로 더 자주 연락드릴게요. 약속해요!" },
     { text: "이 웹사이트는 제가 직접 만들었습니다. 가족 몰래 밤새워서 만들었어요!" },
-    // 아래 문장은 2.5초 더 머물기
+    // 2.5초 더 머물기
     { text: "어서 늦게 일어난다고 맨날 꾸중 내셨던 저희 막내 아드님께 한 마디를 부탁드려요ㅎㅎ", extraDelay: 2500 },
     { text: "새삼 할머니께서 계셔서 저희 가족들이 이 자리에 있을 수 있게 됨을 느낍니다." },
     { text: "다시 한번 저희 가족 곁에 있어 주셔서 감사하고, 태어나 주셔서 감사합니다!" },
@@ -18,28 +18,29 @@ const letterContent = [
     { text: "- 김효빈 올림 -", isLast: true }
 ];
 
-const READ_SPEED = 150; 
+const READ_SPEED = 150; // 기본 읽기 속도
 let isTTSOn = false;
 let currentStep = 0;
 let letterTimer = null;
 
-// DOM 요소 가져오기 (전환 화면 요소 추가됨)
+// DOM 요소 가져오기
 const introScreen = document.getElementById('intro-screen');
 const letterScreen = document.getElementById('letter-screen');
-const transitionScreen = document.getElementById('transition-screen'); // [★추가]
+const transitionScreen = document.getElementById('transition-screen'); // 중간 화면
 const guestbookScreen = document.getElementById('guestbook-screen');
 const letterText = document.getElementById('letter-text');
 const audio = document.getElementById('bgm-audio');
-const goToGuestbookBtn = document.getElementById('go-to-guestbook-btn'); // [★추가]
+const goToGuestbookBtn = document.getElementById('go-to-guestbook-btn');
 
 // ==========================================
-// 2. 파이어베이스(DB) 설정 (아직 비워둠)
+// 2. 파이어베이스(DB) 설정 영역
 // ==========================================
+// ★ 중요: 나중에 이곳에 키값을 넣어야 글이 저장됩니다.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    // 여기에 API 키가 들어갑니다
+    // 여기에 API Key를 넣으세요
 };
 
 let db;
@@ -49,7 +50,7 @@ try {
 } catch (e) { console.log("DB 설정 전"); }
 
 // ==========================================
-// 3. 주요 기능 구현
+// 3. 주요 기능 로직
 // ==========================================
 
 window.onload = () => { audio.volume = 1.0; };
@@ -58,8 +59,10 @@ window.onload = () => { audio.volume = 1.0; };
 document.getElementById('start-btn').addEventListener('click', () => {
     introScreen.classList.add('hidden');
     letterScreen.classList.remove('hidden');
+    
+    // 음악 재생 및 첫 문장 시작
     setTimeout(() => {
-        audio.play().catch(e => console.log("자동재생 막힘"));
+        audio.play().catch(e => console.log("자동재생 정책으로 클릭 필요"));
         showNextSentence();
     }, 1000);
     fireConfetti();
@@ -77,16 +80,15 @@ ttsBtn.addEventListener('click', () => {
     ttsBtn.innerText = isTTSOn ? "🔊 음성 끄기" : "🔈 음성 켜기";
 });
 
-// [★추가된 기능] 중간 화면에서 롤링페이퍼로 이동 버튼 클릭 시
+// [버튼] 중간 화면에서 방명록으로 이동
 goToGuestbookBtn.addEventListener('click', () => {
     transitionScreen.classList.add('hidden');
     guestbookScreen.classList.remove('hidden');
-    loadGuestbook(); // 이때 데이터를 불러옵니다.
-    fireConfetti(); // 롤링페이퍼 들어갈 때 한 번 더 축하!
+    loadGuestbook();
+    fireConfetti();
 });
 
-
-// 편지 보여주는 함수 (줄바꿈 포함)
+// ★ 편지 보여주기 함수 (구름 효과 + 자동 줄바꿈)
 function showNextSentence() {
     if (currentStep >= letterContent.length) {
         finishLetter();
@@ -95,40 +97,43 @@ function showNextSentence() {
 
     const item = letterContent[currentStep];
     const originalText = item.text;
-    // 온점과 느낌표 뒤에 줄바꿈 태그 추가
+    
+    // 온점(.)과 느낌표(!) 뒤에 줄바꿈(<br>) 넣기
     let formattedText = originalText
         .replace(/\. /g, '.<br>') 
         .replace(/\! /g, '!<br>')
-        .replace(/\.\./g, '..'); 
+        .replace(/\.\./g, '..'); // 말줄임표 보존
         
-    letterText.classList.remove('fade-in-text');
-    void letterText.offsetWidth; 
+    // 애니메이션 리셋 (클래스를 뺐다 껴서 다시 실행)
+    letterText.classList.remove('cloud-text');
+    void letterText.offsetWidth; // 리플로우 강제
     letterText.innerHTML = formattedText;
-    letterText.classList.add('fade-in-text');
+    letterText.classList.add('cloud-text'); // 구름 효과 시작
 
+    // TTS
     if (isTTSOn) speakText(originalText);
 
-    let duration = (originalText.length * READ_SPEED) + 2500; // 기본 텀 약간 늘림
+    // 시간 계산
+    let duration = (originalText.length * READ_SPEED) + 2500; // 구름 효과라 여유 있게
     if (item.extraDelay) duration += item.extraDelay;
 
+    // 편지 끝나갈 즈음 음악 줄이기
     if (currentStep >= letterContent.length - 2) fadeOutAudio();
 
     currentStep++;
     letterTimer = setTimeout(showNextSentence, duration);
 }
 
-// [★수정된 함수] 편지 끝났을 때 처리
+// 편지 끝내기
 function finishLetter() {
     clearTimeout(letterTimer);
     window.speechSynthesis.cancel();
     
     letterScreen.classList.add('hidden');
-    
-    // [수정] 바로 guestbook으로 가지 않고 transitionScreen을 보여줌
-    transitionScreen.classList.remove('hidden');
+    transitionScreen.classList.remove('hidden'); // 중간 화면 보여주기
     
     fadeOutAudio();
-    fireConfetti(); // 효빈님 편지 끝 축하!
+    fireConfetti();
 }
 
 function fadeOutAudio() {
@@ -153,9 +158,8 @@ function fireConfetti() {
 }
 
 // ==========================================
-// 4. 롤링페이퍼 기능
+// 4. 롤링페이퍼 기능 (DB 연동)
 // ==========================================
-// (이 부분은 이전과 동일합니다)
 const writeModal = document.getElementById('write-modal');
 const readModal = document.getElementById('read-modal');
 

@@ -1,4 +1,4 @@
-/* 기본 설정 및 폰트 */
+/* 기본 설정 및 폰트 변수 */
 :root {
     --main-font: 'Gowun Batang', serif;
     --hand-font: 'Gamja Flower', cursive;
@@ -16,6 +16,7 @@ body {
     color: var(--text-color);
     width: 100vw; height: 100vh;
     overflow: hidden; position: relative;
+    /* 배경 패턴 */
     background-image: radial-gradient(#fff5e6 20%, transparent 20%),
                       radial-gradient(#fff5e6 20%, transparent 20%);
     background-size: 50px 50px; background-position: 0 0, 25px 25px;
@@ -29,7 +30,7 @@ body {
 
 .hidden { display: none !important; opacity: 0; }
 
-/* [★수정됨] 1. 인트로 & 전환 화면 꾸미기 (스타일 공유) */
+/* 1. 인트로 & 전환 화면 스타일 */
 #intro-screen, #transition-screen {
     background: linear-gradient(135deg, #fff0f0 0%, #fff8e1 100%);
     z-index: 10;
@@ -47,18 +48,44 @@ body {
 .main-title { font-size: 5rem; margin-bottom: 30px; font-weight: 700; color: #333; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
 .sub-title { font-size: 2rem; color: #555; margin-bottom: 50px; }
 
-/* 2. 메인 편지 화면 */
-#letter-screen { background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(253,245,230,0.95) 100%); }
+/* 2. 메인 편지 화면 (구름 효과 적용) */
+#letter-screen {
+    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.9) 100%);
+}
+
 #letter-container {
     width: 90%; height: 70vh; display: flex; justify-content: center; align-items: center;
     border-top: 2px solid var(--gold-color); border-bottom: 2px solid var(--gold-color); padding: 20px;
 }
+
 #letter-text {
     font-size: 3.8rem; line-height: 1.5; font-weight: 700; word-break: keep-all; text-align: center; color: #000;
-    animation: fadeInUp 1s ease forwards;
+    opacity: 0; /* 기본 숨김 */
 }
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
+/* 구름처럼 나타나는 클래스 */
+.cloud-text {
+    animation: cloudFadeIn 2.5s ease-in-out forwards;
+}
+
+@keyframes cloudFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(15px) scale(0.95);
+        filter: blur(12px); /* 안개 효과 */
+    }
+    40% {
+        opacity: 0.6;
+        filter: blur(5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* 컨트롤 버튼들 */
 .top-controls { position: absolute; top: 30px; right: 30px; }
 .bottom-controls { position: absolute; bottom: 30px; right: 30px; }
 
@@ -122,6 +149,7 @@ body {
     position: absolute; top: 15px; right: 25px; font-size: 2.5rem; cursor: pointer; color: #888;
 }
 
+/* 반응형 모바일 */
 @media (max-width: 768px) {
     .main-title { font-size: 3rem; }
     #letter-text { font-size: 2.2rem; }
