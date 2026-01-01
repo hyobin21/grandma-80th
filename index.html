@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>할머니 팔순 축하드려요!</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <div id="bg-slideshow"></div>
+
+    <div class="overlay"></div>
+
+    <section id="intro-screen" class="screen">
+        <div class="content-box">
+            <h1 class="main-title">할머니 팔순 기념 편지</h1>
+            <p class="sub-title">사랑하는 가족들이 준비했어요</p>
+            <button id="start-btn" class="btn-primary">💌 편지 열기</button>
+        </div>
+    </section>
+
+    <section id="letter-screen" class="screen hidden">
+        <div class="top-controls">
+            <button id="tts-toggle-btn" class="icon-btn">🔈 음성 켜기</button>
+        </div>
+
+        <div id="letter-container">
+            <p id="letter-text" class="fade-in-text"></p>
+        </div>
+
+        <div class="bottom-controls">
+            <button id="skip-btn" class="btn-text">건너뛰기 >></button>
+        </div>
+    </section>
+
+    <section id="guestbook-screen" class="screen hidden">
+        <div class="guestbook-header">
+            <div class="family-photo-frame">
+                <img src="./assets/family.jpg" alt="우리 가족 사진" id="family-photo">
+            </div>
+            <h2>👨‍👩‍👧‍👦 가족들의 사랑이 담긴 편지</h2>
+            <button id="write-btn" class="btn-secondary">✏️ 편지 쓰기</button>
+        </div>
+
+        <div id="guestbook-container">
+            </div>
+    </section>
+
+    <div id="write-modal" class="modal hidden">
+        <div class="modal-content post-it-style">
+            <span class="close-btn">&times;</span>
+            <h3>가족 편지 남기기</h3>
+            <input type="text" id="input-name" placeholder="이름 (예: 큰아들)">
+            <input type="text" id="input-title" placeholder="제목">
+            <textarea id="input-message" placeholder="할머니께 드릴 말씀을 적어주세요."></textarea>
+            <button id="save-btn" class="btn-primary">게시판에 붙이기</button>
+        </div>
+    </div>
+
+    <div id="read-modal" class="modal hidden">
+        <div class="modal-content post-it-style">
+            <span class="close-read-btn">&times;</span>
+            <div class="read-header">
+                <h3 id="read-title">제목</h3>
+                <span id="read-name">작성자</span>
+            </div>
+            <div class="read-body">
+                <p id="read-message">내용</p>
+            </div>
+            <div class="read-footer">
+                <button id="read-tts-btn" class="btn-small">🔈 읽어주기</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bgm-audio" src="./assets/bgm.mp3"></audio>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+/* 기본 설정 및 폰트 변수 */
+:root {
+    --main-font: 'Gowun Batang', serif;      /* 메인 편지용: 세련된 명조 */
+    --hand-font: 'Gamja Flower', cursive;    /* 롤링페이퍼용: 귀여운 손글씨 */
+    --bg-color: #fdfbf7;                     /* 따뜻한 미색 배경 */
+    --text-color: #000000;                   /* 글자는 무조건 검정 */
+    --accent-color: #ff7e67;                 /* 포인트 색상 (살구색) */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--main-font);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* 스크롤 방지 (앱처럼 보이게) */
+    position: relative;
+}
+
+/* 화면 공통 스타일 */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1s ease;
+    padding: 20px;
+}
+
+/* 숨김 클래스 */
+.hidden {
+    display: none !important;
+    opacity: 0;
+}
+
+/* 1. 인트로 화면 */
+#intro-screen {
+    background: linear-gradient(135deg, #fff0f0 0%, #fdfbf7 100%);
+    z-index: 10;
+}
+
+.main-title {
+    font-size: 4rem; /* 아주 큰 글씨 */
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.sub-title {
+    font-size: 1.5rem;
+    color: #555;
+    margin-bottom: 40px;
+}
+
+/* 2. 메인 편지 화면 */
+#letter-screen {
+    background-color: rgba(255, 255, 255, 0.9); /* 배경이 있어도 글자 잘 보이게 반투명 흰색 */
+}
+
+#letter-container {
+    width: 80%;
+    text-align: center;
+}
+
+#letter-text {
+    font-size: 3rem; /* 할머니를 위해 매우 큼 */
+    line-height: 1.6;
+    font-weight: 700;
+    word-break: keep-all;
+    animation: fadeInUp 1s ease forwards;
+}
+
+/* 글자 나타나는 애니메이션 */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 컨트롤 버튼들 */
+.top-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.bottom-controls {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+}
+
+/* 버튼 디자인 */
+.btn-primary {
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 1.5rem;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: var(--main-font);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.btn-primary:hover { transform: scale(1.05); }
+
+.btn-secondary {
+    background-color: #ffd700;
+    color: black;
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: var(--hand-font);
+    font-weight: bold;
+}
+
+.icon-btn, .btn-text, .btn-small {
+    background: none;
+    border: 2px solid #333;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* 3. 롤링페이퍼 화면 */
+#guestbook-screen {
+    display: block; /* 그리드 배치를 위해 flex 해제 */
+    overflow-y: auto; /* 내용 많으면 스크롤 */
+    background-color: #f0f4f8;
+}
+
+.guestbook-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-top: 20px;
+}
+
+/* 가족 사진 프레임 */
+.family-photo-frame {
+    width: 300px;
+    height: 200px;
+    margin: 0 auto 20px;
+    border: 5px solid white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: #ddd;
+}
+
+#family-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#guestbook-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 포스트잇 스타일 */
+.post-it {
+    background-color: #fffacD; /* 레몬색 */
+    padding: 20px;
+    font-family: var(--hand-font);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+    font-size: 1.3rem;
+    color: #333;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.post-it:hover {
+    transform: rotate(-2deg) scale(1.05);
+    z-index: 5;
+}
+
+.post-it:nth-child(even) { background-color: #d1f7c4; } /* 연두색 */
+.post-it:nth-child(3n) { background-color: #ffd1dc; }  /* 분홍색 */
+
+.post-it-name { font-weight: bold; font-size: 1rem; color: #555; text-align: right; }
+.post-it-title { font-weight: bold; font-size: 1.5rem; margin-bottom: 10px; }
+
+/* 모달창 스타일 */
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    width: 500px;
+    max-width: 90%;
+    border-radius: 10px;
+    text-align: center;
+    position: relative;
+    font-family: var(--main-font);
+}
+
+.post-it-style input, .post-it-style textarea {
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 1.2rem;
+    border: 1px solid #ccc;
+}
+
+.post-it-style textarea { height: 150px; }
+.close-btn, .close-read-btn {
+    position: absolute; top: 10px; right: 20px;
+    font-size: 2rem; cursor: pointer;
+}
+
+/* 반응형 (작은 화면) */
+@media (max-width: 768px) {
+    .main-title { font-size: 2.5rem; }
+    #letter-text { font-size: 2rem; }
+}
