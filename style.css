@@ -1,313 +1,234 @@
 /* =========================================
-   1. 기본 설정 및 색상 팔레트 (따뜻한 나무 & 종이 색)
+   1. 기본 설정 및 색상 팔레트 (화려한 팔순 잔치)
    ========================================= */
 :root {
     --main-font: 'Gowun Batang', serif;
     --hand-font: 'Gamja Flower', cursive;
     
-    /* 색상: 커피, 오래된 종이, 벽돌, 나무 색 */
-    --bg-warm: #fdf5e6;       /* 오래된 종이 색 (Old Lace) */
-    --wood-dark: #5d4037;     /* 진한 고동색 (텍스트) */
-    --wood-light: #8d6e63;    /* 연한 갈색 (테두리) */
-    --accent-red: #c0392b;    /* 우체통 빨간색 (포인트) */
-    --cozy-orange: #ffe0b2;   /* 난로 불빛 같은 주황색 */
+    /* 색상 팔레트: 골드, 코랄, 크림, 딥레드 */
+    --bg-gradient-start: #fff1eb; /* 따뜻한 크림색 */
+    --bg-gradient-end: #ace0f9;   /* 은은한 하늘색 (대비감) */
+    --gold-color: #d4af37;        /* 고급스러운 금색 */
+    --gold-shadow: #bfa35f;       /* 금색 그림자 */
+    --accent-color: #ff6b6b;      /* 화사한 코랄 레드 (포인트) */
+    --text-dark: #2c2c2c;         /* 부드러운 검정 */
+    --paper-cream: #fdfbf7;       /* 고급지 색상 */
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     font-family: var(--main-font);
-    color: var(--wood-dark);
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
+    color: var(--text-dark);
+    width: 100vw; height: 100vh;
+    overflow: hidden; position: relative;
     
-    /* 배경: 따뜻한 난로가 켜진 방 안의 느낌 (중앙은 밝고 가장자리는 어둡게) */
-    background: radial-gradient(circle at center, #fff8e1 0%, #ffe0b2 80%, #ffcc80 100%);
+    /* 배경: 화려한 그라데이션 + 은은한 축하 패턴 오버레이 */
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, #ffd1c4 50%, var(--bg-gradient-start) 100%);
 }
 
-/* 화면 전체에 은은한 노이즈 텍스처(종이 질감) 추가 */
+/* 배경에 깔리는 은은한 축하 폭죽/보케 패턴 (SVG 활용) */
 body::before {
     content: "";
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 1;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4af37' fill-opacity='0.15'%3E%3Ccircle cx='20' cy='20' r='4'/%3E%3Ccircle cx='60' cy='40' r='3'/%3E%3Ccircle cx='80' cy='10' r='5'/%3E%3Ccircle cx='10' cy='70' r='2'/%3E%3Ccircle cx='40' cy='90' r='4'/%3E%3Ccircle cx='90' cy='80' r='3'/%3E%3Cpath d='M50 50 L55 60 L45 60 Z' /%3E%3Cpath d='M70 30 L75 40 L65 40 Z' /%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1;
+    animation: subtleMove 20s linear infinite; /* 배경 살짝 움직이게 */
+}
+@keyframes subtleMove { from { background-position: 0 0; } to { background-position: 100px 100px; } }
+
+
+/* 화면 테두리 장식 (액자 느낌) */
+body::after {
+    content: ""; position: fixed;
+    top: 10px; left: 10px; right: 10px; bottom: 10px;
+    border: 4px double var(--gold-color);
+    border-radius: 10px;
+    box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.3);
+    pointer-events: none; z-index: 999;
 }
 
 /* =========================================
-   2. 레이아웃 & 공통 박스 디자인
+   2. 공통 레이아웃 및 박스 디자인
    ========================================= */
 .screen {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 1s ease;
-    padding: 30px;
-    z-index: 10;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    transition: opacity 1s ease; padding: 30px; z-index: 10;
 }
-
 .hidden { display: none !important; opacity: 0; }
 
-/* 내용 박스: 동화책 페이지나 편지지 느낌 */
-.content-box {
-    text-align: center;
-    background: #fff;
-    padding: 50px 70px;
-    border-radius: 15px; /* 부드러운 모서리 */
-    
-    /* 테두리를 실선 대신 점선으로 해서 아날로그 감성 추가 */
-    border: 3px dashed var(--wood-light);
-    
-    /* 그림자를 부드럽게 퍼지게 */
-    box-shadow: 0 10px 25px rgba(93, 64, 55, 0.15);
+/* 장식적인 프레임 (모든 박스에 적용) */
+.decorative-frame {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    /* 화려한 금색 테두리와 그림자 효과 */
+    border: 3px solid var(--gold-color);
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.1),
+        inset 0 0 15px rgba(212, 175, 55, 0.2), /* 안쪽 금색 광 */
+        0 0 0 5px rgba(255, 255, 255, 0.5), /* 바깥쪽 흰색 테두리 */
+        0 0 0 8px var(--gold-color); /* 바깥쪽 금색 테두리 */
     position: relative;
+    overflow: hidden;
+}
+
+/* 인트로 & 전환 화면 박스 */
+.content-box {
+    text-align: center; padding: 70px 60px; max-width: 800px; width: 90%;
 }
 
 /* 제목 스타일 */
 .main-title {
-    font-size: 5rem;
-    margin-bottom: 25px;
-    font-weight: 700;
-    color: var(--wood-dark);
-    text-shadow: 2px 2px 0px rgba(255,255,255,0.5); /* 입체감 */
+    font-size: 5.5rem; margin-bottom: 30px; font-weight: 700;
+    color: var(--text-dark);
+    /* 금색 그라데이션 텍스트 효과 */
+    background: linear-gradient(to right, var(--text-dark), var(--gold-color), var(--text-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
 }
 
 .sub-title {
-    font-size: 2rem;
-    color: #8d6e63;
-    margin-bottom: 40px;
-    font-family: var(--hand-font); /* 손글씨 폰트 사용 */
+    font-size: 2.2rem; color: #555; margin-bottom: 50px; font-weight: 400;
 }
 
 /* =========================================
-   3. 버튼 디자인 (나무 간판 & 우표 느낌)
+   3. 버튼 디자인 (축제 분위기)
    ========================================= */
+.festive-btn {
+    font-family: var(--main-font); font-weight: bold;
+    transition: all 0.3s ease; cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    position: relative; overflow: hidden;
+}
+/* 버튼에 광택 효과 추가 */
+.festive-btn::after {
+    content: ""; position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+    transform: rotate(45deg); transition: all 0.5s; opacity: 0;
+}
+.festive-btn:hover::after { left: 100%; opacity: 1; transition: 0.7s; }
+.festive-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+
 .btn-primary {
-    background-color: var(--accent-red);
-    color: white;
-    font-size: 2rem;
-    padding: 18px 50px;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-family: var(--hand-font);
-    /* 버튼 아래 진한 그림자로 입체감 (레트로 게임/간판 느낌) */
-    box-shadow: 0 5px 0px #922b21; 
-    transition: transform 0.1s, box-shadow 0.1s;
+    background: linear-gradient(to right, var(--accent-color), #ff8f8f);
+    color: white; font-size: 2rem; padding: 18px 50px; border: none; border-radius: 50px;
 }
-
-.btn-primary:hover {
-    transform: translateY(3px);
-    box-shadow: 0 2px 0px #922b21;
-}
-
 .btn-secondary {
-    background-color: #f39c12; /* 귤색 */
-    color: white;
-    font-size: 1.6rem;
-    padding: 15px 35px;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    font-family: var(--hand-font);
-    box-shadow: 0 4px 0px #d35400;
+    background: linear-gradient(to right, var(--gold-color), #eacda3);
+    color: #2c2c2c; font-size: 1.6rem; padding: 15px 40px; border: none; border-radius: 50px;
 }
-.btn-secondary:hover { transform: translateY(3px); box-shadow: 0 1px 0px #d35400; }
-
 .icon-btn, .btn-text, .btn-small {
-    background: #fff;
-    border: 2px solid var(--wood-light);
-    color: var(--wood-dark);
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 1.3rem;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    background: rgba(255,255,255,0.9); border: 2px solid var(--gold-color);
+    color: var(--text-dark); padding: 12px 25px; border-radius: 30px; font-size: 1.3rem;
 }
+.icon-btn:hover, .btn-text:hover { background: var(--gold-color); color: white; }
 
 /* =========================================
-   4. 편지 화면 (구름 효과 + 편지지)
+   4. 메인 편지 화면 (구름 효과)
    ========================================= */
 #letter-screen {
-    /* 배경 불투명도를 낮춰 뒤의 따뜻한 빛이 비치게 */
-    background: rgba(255, 248, 225, 0.9);
+    /* 배경을 살짝 어둡게 눌러서 편지에 집중 */
+    background: rgba(255, 245, 235, 0.85);
 }
-
 #letter-container {
-    width: 85%;
-    height: 70vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-    /* 위아래 장식: 얇은 두 줄 */
-    border-top: 5px double var(--wood-light);
-    border-bottom: 5px double var(--wood-light);
-    padding: 40px;
-    
-    /* 편지지 질감 */
-    background-image: linear-gradient(#eee 1px, transparent 1px);
-    background-size: 100% 2em; /* 노트 줄무늬 효과 */
+    width: 85%; height: 70vh; display: flex; justify-content: center; align-items: center;
+    padding: 50px;
+    /* 편지지 질감 추가 */
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M0 0h100v100H0z'/%3E%3Cpath d='M10 10h10v10H10zM30 30h10v10H30zM50 50h10v10H50zM70 70h10v10H70zM90 90h10v10H90z'/%3E%3C/g%3E%3C/svg%3E");
 }
-
 #letter-text {
-    font-size: 4rem;
-    line-height: 1.6; /* 줄 간격 넓게 */
-    font-weight: 700;
-    word-break: keep-all;
-    text-align: center;
-    color: var(--wood-dark);
-    opacity: 0;
+    font-size: 3.8rem; line-height: 1.6; font-weight: 700; word-break: keep-all;
+    text-align: center; color: #1a1a1a; opacity: 0;
 }
-
-/* ★ 구름처럼 나타나는 효과 (그대로 유지) */
-.cloud-text {
-    animation: cloudFadeIn 2.5s ease-in-out forwards;
-}
-
+/* 구름 효과 애니메이션 (기존 유지) */
+.cloud-text { animation: cloudFadeIn 2.5s ease-in-out forwards; }
 @keyframes cloudFadeIn {
-    0% {
-        opacity: 0;
-        transform: translateY(15px) scale(0.95);
-        filter: blur(10px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
-    }
+    0% { opacity: 0; transform: translateY(20px) scale(0.9); filter: blur(15px); }
+    40% { opacity: 0.7; filter: blur(5px); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
-
-.top-controls { position: absolute; top: 30px; right: 30px; }
-.bottom-controls { position: absolute; bottom: 30px; right: 30px; }
-
+.top-controls { position: absolute; top: 40px; right: 40px; z-index: 20; }
+.bottom-controls { position: absolute; bottom: 40px; right: 40px; z-index: 20; }
 
 /* =========================================
-   5. 방명록 (코르크 보드 & 폴라로이드 감성)
+   5. 방명록 (화려한 게시판)
    ========================================= */
 #guestbook-screen {
-    background-color: #eaddcf; /* 옅은 나무색/코르크색 */
-    /* 격자 패턴으로 아기자기함 추가 */
-    background-image: 
-        linear-gradient(rgba(255,255,255,0.3) 2px, transparent 2px),
-        linear-gradient(90deg, rgba(255,255,255,0.3) 2px, transparent 2px);
-    background-size: 40px 40px;
-    overflow-y: auto;
+    display: block; overflow-y: auto;
+    /* 배경을 좀 더 화사하게 */
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,230,230,0.8) 100%);
 }
-
-.guestbook-header {
-    text-align: center;
-    margin-bottom: 40px;
-    padding-top: 40px;
-}
-
-/* 가족 사진: 폴라로이드 스타일 */
+.guestbook-header { text-align: center; margin-bottom: 50px; padding-top: 50px; }
 .family-photo-frame {
-    width: 400px;
-    height: auto;
-    background: white;
-    padding: 15px 15px 60px 15px; /* 아래쪽 여백을 넓게 줘서 폴라로이드 느낌 */
-    margin: 0 auto 30px;
-    box-shadow: 5px 5px 15px rgba(0,0,0,0.15);
-    transform: rotate(-2deg); /* 살짝 삐뚤게 */
-    border-radius: 2px;
+    width: 450px; height: 320px; margin: 0 auto 40px; padding: 10px; background: #fff;
+    /* 사진 액자를 더 고급스럽게 */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 5px var(--gold-color) inset;
 }
 #family-photo { width: 100%; height: 100%; object-fit: cover; border: 1px solid #eee; }
-
 #guestbook-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 40px; /* 간격 넓게 */
-    padding: 20px 50px 100px 50px;
-    max-width: 1400px;
-    margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 40px; padding: 30px 60px 100px; max-width: 1400px; margin: 0 auto;
 }
 
-/* 포스트잇: 진짜 종이 조각 느낌 */
+/* 포스트잇: 고급스러운 카드 느낌 */
 .post-it {
-    background-color: #fff;
-    padding: 25px;
-    font-family: var(--hand-font);
-    box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: transform 0.2s;
-    font-size: 1.7rem;
-    color: #444;
-    min-height: 220px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    
-    /* 마스킹 테이프로 붙인 느낌 */
-    position: relative;
+    background-color: var(--paper-cream); padding: 30px; font-family: var(--hand-font);
+    cursor: pointer; transition: all 0.3s; font-size: 1.7rem; color: #444;
+    min-height: 240px; display: flex; flex-direction: column; justify-content: space-between;
     border-radius: 2px;
+    /* 금색 테두리와 입체적인 그림자 */
+    border: 2px solid var(--gold-color);
+    box-shadow: 5px 5px 15px rgba(212, 175, 55, 0.2);
+    position: relative;
 }
-
-/* 마스킹 테이프 그래픽 */
-.post-it::after {
-    content: "";
-    position: absolute;
-    top: -15px; left: 50%;
-    transform: translateX(-50%);
-    width: 100px; height: 30px;
-    background-color: rgba(255, 255, 255, 0.4);
-    border-left: 1px dotted rgba(0,0,0,0.1);
-    border-right: 1px dotted rgba(0,0,0,0.1);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    transform: translateX(-50%) rotate(-1deg);
+/* 상단에 금색 리본 장식 느낌 */
+.post-it::before {
+    content: "★"; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    color: var(--gold-color); font-size: 2rem;
 }
-
-.post-it:hover { transform: scale(1.05); z-index: 20; }
-
-/* 다양한 종이 색상 (파스텔톤) */
-.post-it:nth-child(odd) { background-color: #fff9c4; } /* 연한 노랑 */
-.post-it:nth-child(even) { background-color: #ffccbc; } /* 연한 살구 */
-.post-it:nth-child(3n) { background-color: #c8e6c9; }   /* 연한 초록 */
-.post-it:nth-child(4n) { background-color: #e1bee7; }   /* 연한 보라 */
-
-/* 조금씩 회전시켜서 자연스럽게 */
-.post-it:nth-child(odd) { transform: rotate(1deg); }
-.post-it:nth-child(even) { transform: rotate(-1deg); }
-
+.post-it:hover { transform: translateY(-10px) scale(1.02); box-shadow: 10px 15px 25px rgba(212, 175, 55, 0.3); z-index: 10; }
+/* 색상 다변화 (파스텔 톤 + 금색 테두리) */
+.post-it:nth-child(odd) { background-color: #fffdf0; }
+.post-it:nth-child(even) { background-color: #fff0f5; }
+.post-it-title { font-weight: bold; font-size: 1.9rem; margin-bottom: 20px; border-bottom: 2px dotted var(--gold-color); padding-bottom: 10px; color: var(--text-dark); }
+.post-it-name { font-size: 1.4rem; text-align: right; color: var(--accent-color); font-weight: bold; }
 
 /* =========================================
    6. 모달창
    ========================================= */
 .modal {
-    background: rgba(62, 39, 35, 0.7); /* 진한 갈색 배경 */
+    background: rgba(44, 44, 44, 0.8); /* 진한 배경으로 집중도 향상 */
     z-index: 1000;
 }
-
 .modal-content {
-    background: #fffaf0;
-    border-radius: 20px;
-    border: 5px solid var(--wood-light);
-    box-shadow: 0 0 0 10px rgba(255,255,255,0.2); /* 이중 테두리 효과 */
+    /* 모달창도 화려한 프레임 적용 */
+    max-width: 650px; padding: 50px;
 }
-
 .post-it-style input, .post-it-style textarea {
-    background: #fff;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    font-family: var(--hand-font);
-    font-size: 1.5rem;
+    width: 100%; margin: 15px 0; padding: 18px; font-size: 1.5rem;
+    font-family: var(--main-font); border: 2px solid var(--gold-color);
+    background: #fff; border-radius: 10px; transition: border 0.3s;
 }
+.post-it-style input:focus, .post-it-style textarea:focus {
+    outline: none; border-color: var(--accent-color); box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+.post-it-style textarea { height: 220px; resize: none; }
+.close-btn, .close-read-btn {
+    position: absolute; top: 20px; right: 30px; font-size: 3rem; cursor: pointer; color: var(--gold-color); transition: color 0.2s;
+}
+.close-btn:hover, .close-read-btn:hover { color: var(--accent-color); }
 
+/* 반응형 (모바일) */
 @media (max-width: 768px) {
-    .main-title { font-size: 3rem; }
-    #letter-text { font-size: 2.3rem; }
-    .family-photo-frame { width: 90%; transform: rotate(0deg); }
-    .content-box { padding: 40px 20px; border-width: 2px; }
+    .main-title { font-size: 3.5rem; }
+    .sub-title { font-size: 1.5rem; }
+    #letter-text { font-size: 2.4rem; }
+    .content-box { padding: 50px 30px; }
+    .decorative-frame { border-width: 5px; box-shadow: 0 0 0 3px rgba(255,255,255,0.5), 0 0 0 5px var(--gold-color); }
+    body::after { border-width: 2px; top: 5px; left: 5px; right: 5px; bottom: 5px; }
+    .family-photo-frame { width: 100%; height: auto; aspect-ratio: 4/3; }
+    #guestbook-container { padding: 20px 20px 80px; gap: 20px; }
 }

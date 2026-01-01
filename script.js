@@ -1,5 +1,5 @@
 // ==========================================
-// 1. 편지 내용 설정
+// 1. 편지 내용 및 설정
 // ==========================================
 const letterContent = [
     { text: "할머니, 안녕하세요!! 할머니의 막내 아들 둘째 딸인 효빈이에요!" },
@@ -18,36 +18,36 @@ const letterContent = [
     { text: "- 김효빈 올림 -", isLast: true }
 ];
 
-const READ_SPEED = 150; // 기본 읽기 속도
+const READ_SPEED = 150; 
 let isTTSOn = false;
 let currentStep = 0;
 let letterTimer = null;
 
-// DOM 요소 가져오기
+// DOM 요소
 const introScreen = document.getElementById('intro-screen');
 const letterScreen = document.getElementById('letter-screen');
-const transitionScreen = document.getElementById('transition-screen'); // 중간 화면
+const transitionScreen = document.getElementById('transition-screen');
 const guestbookScreen = document.getElementById('guestbook-screen');
 const letterText = document.getElementById('letter-text');
 const audio = document.getElementById('bgm-audio');
 const goToGuestbookBtn = document.getElementById('go-to-guestbook-btn');
 
 // ==========================================
-// 2. 파이어베이스(DB) 설정 영역
+// 2. 파이어베이스(DB) 설정
 // ==========================================
-// ★ 중요: 나중에 이곳에 키값을 넣어야 글이 저장됩니다.
+// ★ 중요: 여기에 파이어베이스 API Key를 넣어야 작동합니다.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    // 여기에 API Key를 넣으세요
+    // 여기에 API Key를 붙여넣으세요
 };
 
 let db;
 try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-} catch (e) { console.log("DB 설정 전"); }
+} catch (e) { console.log("DB 설정 필요"); }
 
 // ==========================================
 // 3. 주요 기능 로직
@@ -59,10 +59,8 @@ window.onload = () => { audio.volume = 1.0; };
 document.getElementById('start-btn').addEventListener('click', () => {
     introScreen.classList.add('hidden');
     letterScreen.classList.remove('hidden');
-    
-    // 음악 재생 및 첫 문장 시작
     setTimeout(() => {
-        audio.play().catch(e => console.log("자동재생 정책으로 클릭 필요"));
+        audio.play().catch(e => console.log("자동재생 막힘"));
         showNextSentence();
     }, 1000);
     fireConfetti();
@@ -80,7 +78,7 @@ ttsBtn.addEventListener('click', () => {
     ttsBtn.innerText = isTTSOn ? "🔊 음성 끄기" : "🔈 음성 켜기";
 });
 
-// [버튼] 중간 화면에서 방명록으로 이동
+// [버튼] 중간 화면 -> 방명록 이동
 goToGuestbookBtn.addEventListener('click', () => {
     transitionScreen.classList.add('hidden');
     guestbookScreen.classList.remove('hidden');
@@ -88,7 +86,7 @@ goToGuestbookBtn.addEventListener('click', () => {
     fireConfetti();
 });
 
-// ★ 편지 보여주기 함수 (구름 효과 + 자동 줄바꿈)
+// 편지 보여주기 (구름 효과 + 줄바꿈)
 function showNextSentence() {
     if (currentStep >= letterContent.length) {
         finishLetter();
@@ -97,27 +95,23 @@ function showNextSentence() {
 
     const item = letterContent[currentStep];
     const originalText = item.text;
-    
-    // 온점(.)과 느낌표(!) 뒤에 줄바꿈(<br>) 넣기
+    // 줄바꿈 처리
     let formattedText = originalText
         .replace(/\. /g, '.<br>') 
         .replace(/\! /g, '!<br>')
-        .replace(/\.\./g, '..'); // 말줄임표 보존
+        .replace(/\.\./g, '..'); 
         
-    // 애니메이션 리셋 (클래스를 뺐다 껴서 다시 실행)
+    // 애니메이션 리셋
     letterText.classList.remove('cloud-text');
-    void letterText.offsetWidth; // 리플로우 강제
+    void letterText.offsetWidth; 
     letterText.innerHTML = formattedText;
-    letterText.classList.add('cloud-text'); // 구름 효과 시작
+    letterText.classList.add('cloud-text');
 
-    // TTS
     if (isTTSOn) speakText(originalText);
 
-    // 시간 계산
-    let duration = (originalText.length * READ_SPEED) + 2500; // 구름 효과라 여유 있게
+    let duration = (originalText.length * READ_SPEED) + 2500;
     if (item.extraDelay) duration += item.extraDelay;
 
-    // 편지 끝나갈 즈음 음악 줄이기
     if (currentStep >= letterContent.length - 2) fadeOutAudio();
 
     currentStep++;
@@ -128,10 +122,8 @@ function showNextSentence() {
 function finishLetter() {
     clearTimeout(letterTimer);
     window.speechSynthesis.cancel();
-    
     letterScreen.classList.add('hidden');
-    transitionScreen.classList.remove('hidden'); // 중간 화면 보여주기
-    
+    transitionScreen.classList.remove('hidden'); // 중간 화면으로
     fadeOutAudio();
     fireConfetti();
 }
@@ -150,15 +142,16 @@ function speakText(text) {
     window.speechSynthesis.speak(utterance);
 }
 
+// 꽃가루 효과 (더 풍성하게)
 function fireConfetti() {
     confetti({
-        particleCount: 200, spread: 100, origin: { y: 0.6 },
-        colors: ['#ff0000', '#ffd700', '#ffffff']
+        particleCount: 250, spread: 120, origin: { y: 0.6 },
+        colors: ['#d4af37', '#ff6b6b', '#ffffff', '#fdfbf7'] // 금색, 코랄, 흰색 조합
     });
 }
 
 // ==========================================
-// 4. 롤링페이퍼 기능 (DB 연동)
+// 4. 롤링페이퍼 기능
 // ==========================================
 const writeModal = document.getElementById('write-modal');
 const readModal = document.getElementById('read-modal');
@@ -179,7 +172,7 @@ document.getElementById('save-btn').addEventListener('click', async () => {
     if (!name || !message) { alert("이름과 내용을 꼭 적어주세요!"); return; }
 
     if (!db) {
-        alert("데이터베이스 연결이 안 되어서 저장할 수 없습니다. (테스트 모드)");
+        alert("데이터베이스 미연결: 테스트 모드로 화면에만 표시됩니다.");
         addPostItToScreen({ name, title, message });
         writeModal.classList.add('hidden');
         return;
@@ -188,7 +181,7 @@ document.getElementById('save-btn').addEventListener('click', async () => {
         await addDoc(collection(db, "letters"), {
             name, title, message, date: serverTimestamp()
         });
-        alert("편지가 등록되었습니다!");
+        alert("편지가 성공적으로 등록되었습니다! 🎉");
         writeModal.classList.add('hidden');
         loadGuestbook();
         document.getElementById('input-name').value = '';
@@ -209,8 +202,8 @@ async function loadGuestbook() {
 function addPostItToScreen(data) {
     const container = document.getElementById('guestbook-container');
     const div = document.createElement('div');
-    div.className = 'post-it';
-    div.innerHTML = `<div class="post-it-title">${data.title || '무제'}</div><div class="post-it-name">From. ${data.name}</div>`;
+    div.className = 'post-it festive-btn'; // 버튼 효과 추가
+    div.innerHTML = `<div class="post-it-title">${data.title || '축하합니다!'}</div><div class="post-it-name">From. ${data.name}</div>`;
     div.addEventListener('click', () => {
         document.getElementById('read-title').innerText = data.title;
         document.getElementById('read-name').innerText = "From. " + data.name;

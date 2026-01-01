@@ -16,10 +16,10 @@
 <body>
 
     <section id="intro-screen" class="screen">
-        <div class="content-box">
+        <div class="content-box decorative-frame">
             <h1 class="main-title">할머니 팔순 기념 편지</h1>
-            <p class="sub-title">사랑하는 가족들이 준비했어요</p>
-            <button id="start-btn" class="btn-primary">💌 편지 열기</button>
+            <p class="sub-title">사랑하는 가족들이 한마음으로 준비했어요</p>
+            <button id="start-btn" class="btn-primary festive-btn">💌 사랑의 편지 열기</button>
         </div>
     </section>
 
@@ -27,7 +27,7 @@
         <div class="top-controls">
             <button id="tts-toggle-btn" class="icon-btn">🔈 음성 켜기</button>
         </div>
-        <div id="letter-container">
+        <div id="letter-container" class="decorative-frame">
             <p id="letter-text" class="cloud-text"></p>
         </div>
         <div class="bottom-controls">
@@ -36,49 +36,49 @@
     </section>
 
     <section id="transition-screen" class="screen hidden">
-        <div class="content-box" style="padding: 40px;">
-            <h2 class="sub-title" style="margin-bottom: 30px; font-size: 2.5rem;">효빈이의 편지가 끝났습니다.</h2>
-            <p style="font-size: 1.8rem; margin-bottom: 40px; line-height: 1.4;">다른 가족들도 할머니께<br>사랑의 메시지를 남겼어요!</p>
-            <button id="go-to-guestbook-btn" class="btn-primary" style="font-size: 1.8rem;">👨‍👩‍👧‍👦 가족들의 편지 읽기</button>
+        <div class="content-box decorative-frame" style="padding: 50px;">
+            <h2 class="sub-title" style="margin-bottom: 30px; font-size: 2.8rem; color: var(--accent-color);">효빈이의 편지가 끝났습니다.</h2>
+            <p style="font-size: 2rem; margin-bottom: 40px; line-height: 1.5;">다른 가족들도 할머니를 위해<br>축하 메시지를 가득 남겼어요!</p>
+            <button id="go-to-guestbook-btn" class="btn-primary festive-btn" style="font-size: 1.8rem;">👨‍👩‍👧‍👦 가족 편지함 열기</button>
         </div>
     </section>
 
     <section id="guestbook-screen" class="screen hidden">
         <div class="guestbook-header">
-            <div class="family-photo-frame">
+            <div class="family-photo-frame decorative-frame">
                 <img src="./assets/family.jpg" alt="우리 가족 사진" id="family-photo">
             </div>
-            <h2>💌 가족들의 사랑이 담긴 편지함</h2>
-            <button id="write-btn" class="btn-secondary">✏️ 나도 편지 쓰기</button>
+            <h2 style="color: var(--wood-dark); text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">💌 가족들의 사랑이 담긴 편지함</h2>
+            <button id="write-btn" class="btn-secondary festive-btn">✏️ 나도 축하 글쓰기</button>
         </div>
         <div id="guestbook-container">
             </div>
     </section>
 
     <div id="write-modal" class="modal hidden">
-        <div class="modal-content post-it-style">
+        <div class="modal-content post-it-style decorative-frame">
             <span class="close-btn">&times;</span>
             <h3>가족 편지 남기기</h3>
             <input type="text" id="input-name" placeholder="이름 (예: 큰아들)">
-            <input type="text" id="input-title" placeholder="제목">
-            <textarea id="input-message" placeholder="할머니께 드릴 말씀을 적어주세요."></textarea>
-            <button id="save-btn" class="btn-primary" style="font-size: 1.5rem; padding: 15px 30px;">게시판에 붙이기</button>
+            <input type="text" id="input-title" placeholder="제목 (예: 생신 축하드려요!)">
+            <textarea id="input-message" placeholder="할머니께 드릴 사랑의 메시지를 적어주세요."></textarea>
+            <button id="save-btn" class="btn-primary festive-btn" style="font-size: 1.5rem; padding: 15px 30px;">게시판에 붙이기</button>
         </div>
     </div>
 
     <div id="read-modal" class="modal hidden">
-        <div class="modal-content post-it-style" style="text-align: left;">
+        <div class="modal-content post-it-style decorative-frame" style="text-align: left;">
             <span class="close-read-btn">&times;</span>
-            <div class="read-header" style="border-bottom: 2px dashed #ccc; padding-bottom: 15px; margin-bottom: 15px;">
-                <h3 id="read-title" style="font-size: 2rem; margin-bottom: 10px;">제목</h3>
-                <span id="read-name" style="font-size: 1.3rem; color: #555; float: right;">작성자</span>
+            <div class="read-header" style="border-bottom: 2px dashed var(--gold-color); padding-bottom: 15px; margin-bottom: 15px;">
+                <h3 id="read-title" style="font-size: 2rem; margin-bottom: 10px; color: var(--accent-color);">제목</h3>
+                <span id="read-name" style="font-size: 1.3rem; color: #555; float: right; font-weight: bold;">작성자</span>
                 <div style="clear: both;"></div>
             </div>
             <div class="read-body" style="min-height: 150px; margin-bottom: 20px;">
-                <p id="read-message" style="font-size: 1.6rem; line-height: 1.5; white-space: pre-wrap;">내용</p>
+                <p id="read-message" style="font-size: 1.7rem; line-height: 1.6; white-space: pre-wrap; font-family: var(--hand-font);">내용</p>
             </div>
             <div class="read-footer" style="text-align: center;">
-                <button id="read-tts-btn" class="btn-small">🔈 읽어주기</button>
+                <button id="read-tts-btn" class="btn-small festive-btn">🔈 읽어주기</button>
             </div>
         </div>
     </div>
