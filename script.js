@@ -1,3 +1,4 @@
+// ...existing code...
 // ==========================================
 // 1. 편지 내용
 // ==========================================
@@ -52,7 +53,23 @@ try {
 
 window.onload = () => { audio.volume = 1.0; };
 
-document.getElementById('start-btn').addEventListener('click', () => {
+// Helper: click + touch 바인딩 (모바일 터치에서 버튼이 동작하지 않는 문제 대응)
+function bindClickAndTouch(elem, handler) {
+    if (!elem) return;
+    elem.addEventListener('click', handler);
+    elem.addEventListener('touchend', function (e) {
+        e.preventDefault();
+        handler(e);
+    }, { passive: false });
+}
+
+const startBtn = document.getElementById('start-btn');
+const skipBtn = document.getElementById('skip-btn');
+const ttsBtn = document.getElementById('tts-toggle-btn');
+const writeBtn = document.getElementById('write-btn');
+const saveBtn = document.getElementById('save-btn');
+
+function startIntro() {
     introScreen.classList.add('hidden');
     letterScreen.classList.remove('hidden');
     setTimeout(() => {
@@ -60,23 +77,30 @@ document.getElementById('start-btn').addEventListener('click', () => {
         showNextSentence();
     }, 800);
     fireConfetti();
-});
+}
 
-document.getElementById('skip-btn').addEventListener('click', () => finishLetter());
+function skipLetter() {
+    finishLetter();
+}
 
-const ttsBtn = document.getElementById('tts-toggle-btn');
-ttsBtn.addEventListener('click', () => {
+function toggleTTS() {
     isTTSOn = !isTTSOn;
     ttsBtn.innerText = isTTSOn ? "🔊 소리 끄기" : "🔈 소리 켜기";
-});
+}
 
-goToGuestbookBtn.addEventListener('click', () => {
+function goToGuestbook() {
     transitionScreen.classList.add('hidden');
     guestbookScreen.classList.remove('hidden');
     loadGuestbook();
     fireConfetti();
-});
+}
 
+bindClickAndTouch(startBtn, startIntro);
+bindClickAndTouch(skipBtn, skipLetter);
+bindClickAndTouch(ttsBtn, toggleTTS);
+bindClickAndTouch(goToGuestbookBtn, goToGuestbook);
+
+// 기존 로직 계속...
 function showNextSentence() {
     if (currentStep >= letterContent.length) {
         finishLetter();
@@ -137,15 +161,17 @@ function fireConfetti() {
 const writeModal = document.getElementById('write-modal');
 const readModal = document.getElementById('read-modal');
 
-document.getElementById('write-btn').addEventListener('click', () => writeModal.classList.remove('hidden'));
+bindClickAndTouch(writeBtn, () => writeModal.classList.remove('hidden'));
+
+// 닫기 버튼들에 대해서도 touch 지원 추가
 document.querySelectorAll('.close-btn, .close-read-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    bindClickAndTouch(btn, () => {
         writeModal.classList.add('hidden');
         readModal.classList.add('hidden');
     });
 });
 
-document.getElementById('save-btn').addEventListener('click', async () => {
+bindClickAndTouch(saveBtn, async () => {
     const name = document.getElementById('input-name').value;
     const title = document.getElementById('input-title').value;
     const message = document.getElementById('input-message').value;
@@ -189,8 +215,23 @@ function addCardToScreen(data) {
         document.getElementById('read-title').innerText = data.title;
         document.getElementById('read-name').innerText = data.name;
         document.getElementById('read-message').innerText = data.message;
-        document.getElementById('read-tts-btn').onclick = () => speakText(data.message);
+        // 읽어주기 버튼에 터치 지원 추가
+        const readTtsBtn = document.getElementById('read-tts-btn');
+        readTtsBtn.onclick = () => speakText(data.message);
+        bindClickAndTouch(readTtsBtn, () => speakText(data.message));
         readModal.classList.remove('hidden');
     });
+    // 카드 클릭에 대해서도 touch 지원
+    bindClickAndTouch(div, () => {
+        document.getElementById('read-title').innerText = data.title;
+        document.getElementById('read-name').innerText = data.name;
+        document.getElementById('read-message').innerText = data.message;
+        const readTtsBtn = document.getElementById('read-tts-btn');
+        readTtsBtn.onclick = () => speakText(data.message);
+        bindClickAndTouch(readTtsBtn, () => speakText(data.message));
+        readModal.classList.remove('hidden');
+    });
+
     container.appendChild(div);
 }
+// ...existing code...
