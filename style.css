@@ -1,250 +1,239 @@
 /* =========================================
-   1. 기본 설정 & 색상 (따뜻하고 귀여운 파스텔)
+   1. Design Token (세련된 컬러 & 폰트)
    ========================================= */
 :root {
-    --main-font: 'Gowun Batang', serif;
-    --hand-font: 'Gamja Flower', cursive;
-    --cute-font: 'Dongle', sans-serif;
+    --font-main: 'Gowun Dodum', sans-serif;   /* 깔끔한 본문 */
+    --font-serif: 'Gowun Batang', serif;      /* 진중한 편지 */
+    --font-hand: 'Gaegu', cursive;            /* 귀여운 손글씨 */
     
-    /* 색상: 따뜻한 살구, 크림, 민트, 연한 노랑 */
-    --bg-color: #fffdf7;      /* 따뜻한 크림색 배경 */
-    --accent-color: #ff8ba7;  /* 부드러운 핑크 (버튼) */
-    --accent-hover: #ff6b8b;
-    --text-color: #4a4a4a;    /* 너무 진하지 않은 회색 */
-    --box-bg: #ffffff;
+    /* 몽환적인 그라데이션 배경 색상 */
+    --bg-gradient: linear-gradient(-45deg, #ff9a9e, #fad0c4, #ffd1ff, #a18cd1);
     
-    /* 포스트잇 색상들 */
-    --paper-1: #fff4e6; /* 살구 */
-    --paper-2: #e8f7ff; /* 하늘 */
-    --paper-3: #f0fff0; /* 민트 */
-    --paper-4: #fff0f5; /* 핑크 */
+    /* Glassmorphism (유리 효과) 변수 */
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.8);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --glass-blur: blur(12px);
+
+    /* 포인트 컬러 */
+    --primary: #ff6b81;
+    --primary-hover: #ff4757;
+    --text-dark: #2f3542;
+    --text-gray: #57606f;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 body {
-    font-family: var(--main-font);
-    color: var(--text-color);
+    font-family: var(--font-main);
+    color: var(--text-dark);
     width: 100vw; height: 100vh;
     overflow: hidden; position: relative;
-    background-color: var(--bg-color);
     
-    /* 배경이 휑하지 않게: 귀여운 도트 패턴 추가 */
-    background-image: radial-gradient(#ffe0b2 15%, transparent 16%),
-                      radial-gradient(#b2dfdb 15%, transparent 16%);
-    background-size: 60px 60px;
-    background-position: 0 0, 30px 30px;
+    /* 움직이는 배경 설정 */
+    background: var(--bg-gradient);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
 }
 
-/* ★ 상단 파티 깃발 (가랜드) 장식 */
-.party-flags {
-    position: fixed; top: -10px; left: 0; width: 100%; height: 60px;
-    display: flex; justify-content: center; z-index: 5; pointer-events: none;
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
-.party-flags span {
-    width: 40px; height: 50px; margin: 0 10px;
-    background: #ff6b6b;
-    clip-path: polygon(0 0, 100% 0, 50% 100%); /* 역삼각형 모양 */
-    transform-origin: top center;
-    animation: swing 3s ease-in-out infinite alternate;
-}
-/* 깃발 알록달록하게 */
-.party-flags span:nth-child(odd) { background: #ff9ff3; animation-duration: 2.5s; }
-.party-flags span:nth-child(2n) { background: #feca57; animation-duration: 3.2s; }
-.party-flags span:nth-child(3n) { background: #48dbfb; animation-duration: 2.8s; }
-.party-flags span:nth-child(4n) { background: #1dd1a1; }
 
-@keyframes swing { 0% { transform: rotate(5deg); } 100% { transform: rotate(-5deg); } }
+/* 질감 오버레이 (종이 느낌) */
+.noise-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity: 0.4; pointer-events: none; z-index: 1;
+}
 
 /* =========================================
-   2. 레이아웃 & 박스 (둥글둥글 귀엽게)
+   2. Layout & Glass Component
    ========================================= */
 .screen {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    transition: opacity 0.8s ease; padding: 20px; z-index: 10;
+    transition: opacity 0.6s ease; padding: 20px; z-index: 10;
 }
 .hidden { display: none !important; opacity: 0; }
 
-/* 공통 박스 디자인: 구름처럼 몽글몽글 */
-.content-box {
+/* 유리 카드 스타일 (핵심 디자인) */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur); /* 사파리 호환 */
+    border: var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 24px;
+    padding: 60px 40px;
     text-align: center;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 50px;
-    border-radius: 30px; /* 둥근 모서리 */
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    border: 4px solid #fff; /* 흰색 테두리로 깔끔하게 */
-    max-width: 90%; width: 500px;
+    max-width: 500px; width: 90%;
 }
 
-.deco-icon { font-size: 4rem; margin-bottom: 10px; animation: bounce 2s infinite; }
+.fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* =========================================
+   3. Typography & Icons
+   ========================================= */
+.icon-bounce { font-size: 4rem; margin-bottom: 10px; display: inline-block; animation: bounce 2s infinite; }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
 .main-title {
-    font-family: var(--cute-font); /* 귀여운 폰트 */
-    font-size: 5rem; line-height: 1; margin-bottom: 20px; color: #ff6b6b;
-    text-shadow: 2px 2px 0 #fff;
+    font-family: var(--font-serif);
+    font-size: 2.8rem; font-weight: 700; line-height: 1.2;
+    margin-bottom: 20px; color: var(--text-dark);
 }
-
-.sub-title { font-size: 1.5rem; color: #7f8c8d; margin-bottom: 40px; }
+.sub-title { font-size: 1.1rem; color: var(--text-gray); line-height: 1.6; margin-bottom: 40px; }
+.description { font-size: 1rem; color: var(--text-gray); margin-bottom: 30px; line-height: 1.5; }
 
 /* =========================================
-   3. 버튼 디자인 (말랑말랑한 느낌)
+   4. Buttons (Modern Pill Shape)
    ========================================= */
-/* ★ 중요: 버튼이 배경에 묻히지 않도록 z-index 설정 */
-button { position: relative; z-index: 100; touch-action: manipulation; }
+button { cursor: pointer; border: none; outline: none; transition: all 0.2s ease; font-family: var(--font-main); }
 
-.bubble-btn {
-    background-color: var(--accent-color);
-    color: white; font-size: 1.8rem; padding: 15px 40px;
-    border: none; border-radius: 50px;
-    font-family: var(--hand-font); font-weight: bold; cursor: pointer;
-    box-shadow: 0 5px 0 #e0567a; /* 입체 버튼 */
-    transition: all 0.1s;
+.btn-primary {
+    background: var(--primary); color: white;
+    font-size: 1.2rem; font-weight: bold;
+    padding: 16px 48px; border-radius: 50px;
+    box-shadow: 0 10px 20px rgba(255, 107, 129, 0.3);
 }
-.bubble-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #e0567a; }
+.btn-primary:active { transform: scale(0.96); box-shadow: 0 5px 10px rgba(255, 107, 129, 0.2); }
 
-.btn-secondary {
-    background-color: #feca57; color: white;
-    font-size: 1.5rem; padding: 12px 30px; border: none; border-radius: 30px;
-    font-family: var(--hand-font); box-shadow: 0 4px 0 #e67e22; cursor: pointer;
+.pill-btn {
+    background: rgba(255,255,255,0.8); padding: 8px 20px; border-radius: 30px;
+    font-size: 0.9rem; font-weight: 600; color: var(--text-gray);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
-.btn-secondary:active { transform: translateY(4px); box-shadow: 0 0 0; }
 
-.icon-btn, .btn-text, .btn-small {
-    background: white; border: 2px solid #ddd;
-    color: #555; padding: 10px 20px; border-radius: 20px;
-    font-size: 1.1rem; cursor: pointer; font-weight: bold;
+.text-btn {
+    background: transparent; color: rgba(255,255,255,0.8);
+    font-size: 1rem; font-weight: 500; text-decoration: underline;
+    padding: 10px 20px;
 }
+
+/* 방명록 플로팅 버튼 */
+.btn-floating {
+    position: fixed; bottom: 30px; right: 30px;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--primary); color: white; font-size: 1.8rem;
+    box-shadow: 0 10px 25px rgba(255, 107, 129, 0.4);
+    z-index: 100; display: flex; justify-content: center; align-items: center;
+}
+.btn-floating:hover { transform: translateY(-3px) rotate(10deg); }
 
 /* =========================================
-   4. 편지 화면 (가독성 + 따뜻함)
+   5. 편지 화면
    ========================================= */
-#letter-screen {
-    /* 편지에 집중되도록 배경을 하얗게 덮지만 약간 투명하게 */
-    background: rgba(255, 253, 247, 0.9);
-}
-
 #letter-container {
-    width: 90%; height: 60vh;
-    display: flex; justify-content: center; align-items: center;
-    /* 위아래 귀여운 점선 장식 */
-    border-top: 4px dotted #ffb8b8;
-    border-bottom: 4px dotted #ffb8b8;
+    height: 60vh; display: flex; justify-content: center; align-items: center;
+    position: relative;
+    background: rgba(255, 255, 255, 0.85); /* 글자 가독성을 위해 좀 더 불투명 */
 }
-
+.letter-inner { width: 100%; }
 #letter-text {
-    font-size: 3.2rem; line-height: 1.6; font-weight: 700;
-    word-break: keep-all; text-align: center; color: #333;
-    opacity: 0;
+    font-family: var(--font-serif);
+    font-size: 2.2rem; line-height: 1.7; font-weight: 600;
+    color: #333; word-break: keep-all; opacity: 0;
 }
 
-/* 모바일 버튼 위치 수정: 화면 하단에서 충분히 띄움 */
-.bottom-controls {
-    position: absolute; bottom: 50px; right: 30px;
-    z-index: 200; /* 확실히 위로 */
+/* 구름 효과 */
+.cloud-text { animation: blurIn 1.5s ease forwards; }
+@keyframes blurIn {
+    0% { opacity: 0; filter: blur(10px); transform: scale(0.95); }
+    100% { opacity: 1; filter: blur(0); transform: scale(1); }
 }
-.top-controls { position: absolute; top: 40px; right: 30px; z-index: 200; }
 
-/* 구름 효과 애니메이션 */
-.cloud-text { animation: cloudFadeIn 2s ease-in-out forwards; }
-@keyframes cloudFadeIn {
-    0% { opacity: 0; transform: translateY(10px) scale(0.95); filter: blur(8px); }
-    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-}
+/* 컨트롤 바 위치 (모바일 고려) */
+.control-bar-top { position: absolute; top: 20px; right: 20px; z-index: 50; }
+.control-bar-bottom { position: absolute; bottom: 30px; right: 20px; z-index: 50; }
 
 /* =========================================
-   5. 방명록 (편지함 꾸미기)
+   6. 방명록 (Grid Card Layout)
    ========================================= */
-#guestbook-screen {
-    overflow-y: auto; display: block;
-    /* 코르크판 느낌 대신 귀여운 파스텔 배경 유지 */
-}
+#guestbook-screen { overflow-y: scroll; display: block; padding-top: 0; }
+.guestbook-wrapper { max-width: 1000px; margin: 0 auto; padding: 40px 20px 100px; }
 
-.guestbook-header { text-align: center; margin-bottom: 30px; padding-top: 70px; }
-
-.family-photo-frame {
-    width: 350px; height: auto; margin: 0 auto 20px;
-    background: white; padding: 10px 10px 40px 10px; /* 폴라로이드 비율 */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transform: rotate(-2deg); position: relative;
+.guestbook-header { text-align: center; margin-bottom: 50px; margin-top: 40px; }
+.photo-card {
+    width: 200px; height: 200px; margin: 0 auto 20px;
+    border-radius: 50%; border: 5px solid white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;
+    position: relative;
 }
-/* 사진 위에 테이프 붙인 느낌 */
-.photo-tape {
-    width: 100px; height: 30px; background: rgba(255,255,255,0.5);
-    position: absolute; top: 55px; left: 50%; transform: translateX(-50%) rotate(2deg);
-    border: 1px dashed #ccc; z-index: 20;
-}
-
-#family-photo { width: 100%; border-radius: 2px; }
+#family-photo { width: 100%; height: 100%; object-fit: cover; }
 
 #guestbook-container {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 25px; padding: 20px 40px 100px; max-width: 1200px; margin: 0 auto;
+    gap: 20px;
 }
 
-/* 포스트잇 스타일 */
-.post-it {
-    padding: 20px; font-family: var(--hand-font);
-    cursor: pointer; font-size: 1.6rem; color: #444;
-    min-height: 200px; display: flex; flex-direction: column; justify-content: space-between;
-    box-shadow: 2px 4px 10px rgba(0,0,0,0.08);
-    border-radius: 5px 5px 20px 5px; /* 한쪽 귀퉁이 접힘 */
-    transition: transform 0.2s;
-    position: relative;
+/* 카드 스타일 */
+.card-item {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(5px);
+    border-radius: 16px; padding: 24px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer; border: 1px solid rgba(255,255,255,0.6);
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 180px;
 }
-/* 상단 핀 모양 */
-.post-it::after {
-    content: "📍"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-    font-size: 1.5rem; text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
-}
+.card-item:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); background: white; }
 
-.post-it:hover { transform: scale(1.05) rotate(2deg); z-index: 10; }
+.card-title { font-family: var(--font-hand); font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; color: #333; }
+.card-name { font-size: 0.9rem; color: #888; text-align: right; margin-top: auto; }
 
-/* 포스트잇 색상 랜덤 느낌 */
-.post-it:nth-child(4n+1) { background-color: var(--paper-1); transform: rotate(-1deg); }
-.post-it:nth-child(4n+2) { background-color: var(--paper-2); transform: rotate(2deg); }
-.post-it:nth-child(4n+3) { background-color: var(--paper-3); transform: rotate(-2deg); }
-.post-it:nth-child(4n+4) { background-color: var(--paper-4); transform: rotate(1deg); }
-
-.post-it-title { font-weight: bold; font-size: 1.7rem; margin-bottom: 10px; border-bottom: 1px dashed #bbb; padding-bottom: 5px; }
-.post-it-name { font-size: 1.2rem; text-align: right; color: #888; }
+/* 색상 베리에이션 (파스텔) */
+.card-item:nth-child(4n+1) { background: rgba(255, 236, 239, 0.85); } /* Pink */
+.card-item:nth-child(4n+2) { background: rgba(236, 245, 255, 0.85); } /* Blue */
+.card-item:nth-child(4n+3) { background: rgba(255, 250, 225, 0.85); } /* Yellow */
 
 /* =========================================
-   6. 모달창
+   7. Modal (Clean & Simple)
    ========================================= */
-.modal { background: rgba(0,0,0,0.4); z-index: 1000; }
-
-.modal-content {
-    background: #fff; padding: 30px; width: 90%; max-width: 500px;
-    border-radius: 20px; text-align: center; position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.3); backdrop-filter: blur(4px);
+    display: flex; justify-content: center; align-items: center; z-index: 200;
 }
-.paper-style input, .paper-style textarea {
-    width: 100%; margin: 10px 0; padding: 15px; font-size: 1.3rem;
-    border: 2px solid #eee; border-radius: 10px; font-family: var(--hand-font);
-    background: #f9f9f9;
+.modal-card {
+    background: white; width: 90%; max-width: 450px;
+    border-radius: 24px; padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    position: relative; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.paper-style input:focus, .paper-style textarea:focus {
-    outline: none; border-color: var(--accent-color); background: #fff;
-}
-.paper-style textarea { height: 180px; resize: none; }
-
-.read-mode { text-align: left; }
-.read-header { border-bottom: 2px dashed #ddd; margin-bottom: 15px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: end; }
-.read-body { min-height: 120px; font-size: 1.6rem; line-height: 1.5; white-space: pre-wrap; font-family: var(--hand-font); }
-.read-footer { text-align: center; margin-top: 20px; }
+@keyframes modalPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
 .close-btn, .close-read-btn {
-    position: absolute; top: 15px; right: 20px; font-size: 2.5rem; color: #ccc; cursor: pointer;
+    position: absolute; top: 20px; right: 20px;
+    font-size: 1.5rem; background: #f1f2f6; width: 32px; height: 32px;
+    border-radius: 50%; color: #555; display: flex; justify-content: center; align-items: center;
 }
 
-/* 모바일 반응형 */
+.input-group { margin-bottom: 20px; text-align: left; }
+.input-group label { display: block; font-size: 0.9rem; color: #777; margin-bottom: 8px; margin-left: 5px; }
+input, textarea {
+    width: 100%; padding: 12px 16px; border: 2px solid #f1f2f6; border-radius: 12px;
+    font-family: var(--font-main); font-size: 1rem; transition: border 0.2s;
+}
+input:focus, textarea:focus { border-color: var(--primary); }
+textarea { height: 120px; resize: none; }
+.btn-full { width: 100%; background: var(--primary); color: white; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; }
+
+/* 읽기 모드 스타일 */
+.read-mode { text-align: left; }
+.read-header { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.badge { background: #ffeaa7; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; color: #d35400; }
+.divider { height: 1px; background: #eee; margin: 15px 0; }
+.read-body p { font-family: var(--font-hand); font-size: 1.5rem; line-height: 1.6; color: #444; white-space: pre-wrap; }
+.pill-btn-small { background: #f1f2f6; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; margin-top: 20px; color: #555; }
+
+/* 모바일 폰트 사이즈 조정 */
 @media (max-width: 768px) {
-    .main-title { font-size: 4rem; }
-    #letter-text { font-size: 2.2rem; }
-    .family-photo-frame { width: 80%; transform: rotate(0deg); }
-    .party-flags span { width: 30px; height: 40px; }
-    /* 모바일에서 버튼이 잘 눌리도록 하단 여백 확보 */
-    #guestbook-container { padding-bottom: 150px; }
+    .main-title { font-size: 2.2rem; }
+    #letter-text { font-size: 1.8rem; }
+    .glass-card { padding: 40px 25px; }
 }

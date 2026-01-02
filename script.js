@@ -1,5 +1,5 @@
 // ==========================================
-// 1. 편지 내용 설정
+// 1. 편지 데이터 (수정할 부분 없음)
 // ==========================================
 const letterContent = [
     { text: "할머니, 안녕하세요!! 할머니의 막내 아들 둘째 딸인 효빈이에요!" },
@@ -31,21 +31,20 @@ const audio = document.getElementById('bgm-audio');
 const goToGuestbookBtn = document.getElementById('go-to-guestbook-btn');
 
 // ==========================================
-// 2. 파이어베이스(DB)
+// 2. Firebase (API KEY 입력 필요)
 // ==========================================
-// ★ API Key는 마지막에 꼭 넣어야 합니다.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    // API KEY HERE
+    // 여기에 파이어베이스 API 키를 넣으세요
 };
 
 let db;
 try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-} catch (e) { console.log("DB 미연결: 테스트 모드"); }
+} catch (e) { console.log("DB 미연결: 데모 모드"); }
 
 // ==========================================
 // 3. 메인 로직
@@ -57,20 +56,18 @@ document.getElementById('start-btn').addEventListener('click', () => {
     introScreen.classList.add('hidden');
     letterScreen.classList.remove('hidden');
     setTimeout(() => {
-        audio.play().catch(e => console.log("자동재생 방지됨"));
+        audio.play().catch(e => console.log("Audio Autoplay Blocked"));
         showNextSentence();
-    }, 1000);
+    }, 800);
     fireConfetti();
 });
 
-document.getElementById('skip-btn').addEventListener('click', () => {
-    finishLetter();
-});
+document.getElementById('skip-btn').addEventListener('click', () => finishLetter());
 
 const ttsBtn = document.getElementById('tts-toggle-btn');
 ttsBtn.addEventListener('click', () => {
     isTTSOn = !isTTSOn;
-    ttsBtn.innerText = isTTSOn ? "🔊 끄기" : "🔈 켜기";
+    ttsBtn.innerText = isTTSOn ? "🔊 소리 끄기" : "🔈 소리 켜기";
 });
 
 goToGuestbookBtn.addEventListener('click', () => {
@@ -87,10 +84,10 @@ function showNextSentence() {
     }
     const item = letterContent[currentStep];
     const originalText = item.text;
-    let formattedText = originalText.replace(/\. /g, '.<br>').replace(/\! /g, '!<br>').replace(/\.\./g, '..');
+    let formattedText = originalText.replace(/\. /g, '.<br>').replace(/\! /g, '!<br>');
         
     letterText.classList.remove('cloud-text');
-    void letterText.offsetWidth;
+    void letterText.offsetWidth; // Trigger reflow
     letterText.innerHTML = formattedText;
     letterText.classList.add('cloud-text');
 
@@ -129,13 +126,13 @@ function speakText(text) {
 
 function fireConfetti() {
     confetti({
-        particleCount: 150, spread: 70, origin: { y: 0.6 },
-        colors: ['#ff9ff3', '#feca57', '#48dbfb', '#ff6b6b'] // 파스텔톤 폭죽
+        particleCount: 150, spread: 100, origin: { y: 0.6 },
+        colors: ['#ff9a9e', '#fad0c4', '#a18cd1', '#ffffff'] // 배경톤에 맞춘 색상
     });
 }
 
 // ==========================================
-// 4. 방명록 로직
+// 4. 방명록 로직 (카드 스타일 적용)
 // ==========================================
 const writeModal = document.getElementById('write-modal');
 const readModal = document.getElementById('read-modal');
@@ -153,10 +150,10 @@ document.getElementById('save-btn').addEventListener('click', async () => {
     const title = document.getElementById('input-title').value;
     const message = document.getElementById('input-message').value;
 
-    if (!name || !message) { alert("이름과 내용을 적어주세요!"); return; }
+    if (!name || !message) { alert("이름과 내용은 필수입니다!"); return; }
 
     if (!db) {
-        addPostItToScreen({ name, title, message });
+        addCardToScreen({ name, title, message });
         writeModal.classList.add('hidden');
         return;
     }
@@ -164,13 +161,14 @@ document.getElementById('save-btn').addEventListener('click', async () => {
         await addDoc(collection(db, "letters"), {
             name, title, message, date: serverTimestamp()
         });
-        alert("편지가 벽에 붙었습니다! 🎈");
+        alert("성공적으로 등록되었습니다! ✨");
         writeModal.classList.add('hidden');
         loadGuestbook();
+        // 입력창 초기화
         document.getElementById('input-name').value = '';
         document.getElementById('input-title').value = '';
         document.getElementById('input-message').value = '';
-    } catch (e) { console.error("Error:", e); alert("실패했습니다 ㅠㅠ"); }
+    } catch (e) { console.error("Error:", e); alert("저장 실패 ㅠㅠ"); }
 });
 
 async function loadGuestbook() {
@@ -179,17 +177,18 @@ async function loadGuestbook() {
     if (!db) return;
     const q = query(collection(db, "letters"), orderBy("date", "desc"));
     const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => addPostItToScreen(doc.data()));
+    querySnapshot.forEach((doc) => addCardToScreen(doc.data()));
 }
 
-function addPostItToScreen(data) {
+function addCardToScreen(data) {
     const container = document.getElementById('guestbook-container');
     const div = document.createElement('div');
-    div.className = 'post-it';
-    div.innerHTML = `<div class="post-it-title">${data.title || '축하해요!'}</div><div class="post-it-name">From. ${data.name}</div>`;
+    div.className = 'card-item'; // CSS 클래스 변경
+    div.innerHTML = `<div class="card-title">${data.title || '축하해요!'}</div><div class="card-name">From. ${data.name}</div>`;
+    
     div.addEventListener('click', () => {
         document.getElementById('read-title').innerText = data.title;
-        document.getElementById('read-name').innerText = "From. " + data.name;
+        document.getElementById('read-name').innerText = data.name;
         document.getElementById('read-message').innerText = data.message;
         document.getElementById('read-tts-btn').onclick = () => speakText(data.message);
         readModal.classList.remove('hidden');

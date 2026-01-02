@@ -3,90 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>할머니 팔순 축하드려요!</title>
+    <title>사랑하는 할머니께</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&family=Gamja+Flower&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
-    <div class="party-flags">
-        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-    </div>
+    <div class="noise-overlay"></div>
 
     <section id="intro-screen" class="screen">
-        <div class="content-box">
-            <div class="deco-icon">🎂</div>
-            <h1 class="main-title">할머니 팔순<br>축하드려요!</h1>
-            <p class="sub-title">사랑하는 가족들이 마음을 모았어요</p>
-            <button id="start-btn" class="btn-primary bubble-btn">💌 편지 열어보기</button>
+        <div class="glass-card fade-in-up">
+            <div class="icon-bounce">🎂</div>
+            <h1 class="main-title">Grandma's<br>80th Birthday</h1>
+            <p class="sub-title">할머니의 팔순을 진심으로 축하드려요<br>사랑을 담아 준비했습니다</p>
+            <button id="start-btn" class="btn-primary">💌 편지 열어보기</button>
         </div>
     </section>
 
     <section id="letter-screen" class="screen hidden">
-        <div class="top-controls">
-            <button id="tts-toggle-btn" class="icon-btn">🔈 소리 켜기</button>
+        <div class="control-bar-top">
+            <button id="tts-toggle-btn" class="pill-btn">🔈 소리 켜기</button>
         </div>
         
-        <div id="letter-container">
-            <p id="letter-text" class="cloud-text"></p>
+        <div id="letter-container" class="glass-card">
+            <div class="letter-inner">
+                <p id="letter-text" class="cloud-text"></p>
+            </div>
         </div>
 
-        <div class="bottom-controls">
-            <button id="skip-btn" class="btn-text">건너뛰기 >></button>
+        <div class="control-bar-bottom">
+            <button id="skip-btn" class="text-btn">Skip >></button>
         </div>
     </section>
 
     <section id="transition-screen" class="screen hidden">
-        <div class="content-box">
-            <div class="deco-icon">🎁</div>
-            <h2 class="sub-title" style="font-size: 2.2rem; color: #ff7e67;">효빈이의 편지 끝!</h2>
-            <p style="font-size: 1.8rem; line-height: 1.5; color: #555;">이제 다른 가족들이 남긴<br>축하 메시지를 보러 가요!</p>
-            <button id="go-to-guestbook-btn" class="btn-primary bubble-btn" style="margin-top: 20px;">👨‍👩‍👧‍👦 가족 편지함 가기</button>
+        <div class="glass-card fade-in-up">
+            <div class="icon-bounce" style="animation-delay: 0.1s;">🎁</div>
+            <h2 class="sub-title" style="color: #ff6b6b; font-weight: bold;">편지가 도착했어요!</h2>
+            <p class="description">효빈이의 마음이 잘 전달되었을까요?<br>이제 온 가족의 축하 메시지를 확인해보세요.</p>
+            <button id="go-to-guestbook-btn" class="btn-primary">👨‍👩‍👧‍👦 가족 편지함 입장</button>
         </div>
     </section>
 
     <section id="guestbook-screen" class="screen hidden">
-        <div class="guestbook-header">
-            <div class="photo-tape"></div>
-            <div class="family-photo-frame">
-                <img src="./assets/family.jpg" alt="우리 가족 사진" id="family-photo">
-            </div>
-            <h2>🎈 사랑의 편지함</h2>
-            <button id="write-btn" class="btn-secondary">✏️ 축하 글 남기기</button>
+        <div class="guestbook-wrapper">
+            <header class="guestbook-header fade-in-up">
+                <div class="photo-card">
+                    <img src="./assets/family.jpg" alt="가족 사진" id="family-photo">
+                </div>
+                <h2>To. 사랑하는 할머니</h2>
+                <button id="write-btn" class="btn-floating">✏️</button>
+            </header>
+            
+            <div id="guestbook-container">
+                </div>
         </div>
-        <div id="guestbook-container">
-            </div>
     </section>
 
     <div id="write-modal" class="modal hidden">
-        <div class="modal-content paper-style">
-            <span class="close-btn">&times;</span>
-            <h3>📝 편지 쓰기</h3>
-            <input type="text" id="input-name" placeholder="누구신가요? (예: 큰아들)">
-            <input type="text" id="input-title" placeholder="제목 (예: 생신 축하드려요!)">
-            <textarea id="input-message" placeholder="할머니께 하고 싶은 말씀을 적어주세요."></textarea>
-            <button id="save-btn" class="btn-primary bubble-btn">벽에 붙이기</button>
+        <div class="modal-card">
+            <button class="close-btn">&times;</button>
+            <h3>✨ 축하 메시지 남기기</h3>
+            <div class="input-group">
+                <label>보내는 사람</label>
+                <input type="text" id="input-name" placeholder="예: 큰아들">
+            </div>
+            <div class="input-group">
+                <label>제목</label>
+                <input type="text" id="input-title" placeholder="축하의 한마디">
+            </div>
+            <div class="input-group">
+                <label>내용</label>
+                <textarea id="input-message" placeholder="할머니께 드릴 사랑의 메시지를 적어주세요."></textarea>
+            </div>
+            <button id="save-btn" class="btn-full">등록하기</button>
         </div>
     </div>
 
     <div id="read-modal" class="modal hidden">
-        <div class="modal-content paper-style read-mode">
-            <span class="close-read-btn">&times;</span>
+        <div class="modal-card read-mode">
+            <button class="close-read-btn">&times;</button>
             <div class="read-header">
-                <h3 id="read-title">제목</h3>
-                <span id="read-name">작성자</span>
+                <span class="badge">From</span>
+                <h3 id="read-name">작성자</h3>
             </div>
+            <h4 id="read-title">제목</h4>
+            <div class="divider"></div>
             <div class="read-body">
                 <p id="read-message">내용</p>
             </div>
-            <div class="read-footer">
-                <button id="read-tts-btn" class="btn-small">🔈 읽어주기</button>
-            </div>
+            <button id="read-tts-btn" class="pill-btn-small">🔈 읽어주기</button>
         </div>
     </div>
 
