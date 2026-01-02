@@ -7,84 +7,90 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&family=Gamja+Flower&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
-
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
+    <div class="party-flags">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+
     <section id="intro-screen" class="screen">
-        <div class="content-box decorative-frame">
-            <h1 class="main-title">할머니 팔순 기념 편지</h1>
-            <p class="sub-title">사랑하는 가족들이 한마음으로 준비했어요</p>
-            <button id="start-btn" class="btn-primary festive-btn">💌 사랑의 편지 열기</button>
+        <div class="content-box">
+            <div class="deco-icon">🎂</div>
+            <h1 class="main-title">할머니 팔순<br>축하드려요!</h1>
+            <p class="sub-title">사랑하는 가족들이 마음을 모았어요</p>
+            <button id="start-btn" class="btn-primary bubble-btn">💌 편지 열어보기</button>
         </div>
     </section>
 
     <section id="letter-screen" class="screen hidden">
         <div class="top-controls">
-            <button id="tts-toggle-btn" class="icon-btn">🔈 음성 켜기</button>
+            <button id="tts-toggle-btn" class="icon-btn">🔈 소리 켜기</button>
         </div>
-        <div id="letter-container" class="decorative-frame">
+        
+        <div id="letter-container">
             <p id="letter-text" class="cloud-text"></p>
         </div>
+
         <div class="bottom-controls">
             <button id="skip-btn" class="btn-text">건너뛰기 >></button>
         </div>
     </section>
 
     <section id="transition-screen" class="screen hidden">
-        <div class="content-box decorative-frame" style="padding: 50px;">
-            <h2 class="sub-title" style="margin-bottom: 30px; font-size: 2.8rem; color: var(--accent-color);">효빈이의 편지가 끝났습니다.</h2>
-            <p style="font-size: 2rem; margin-bottom: 40px; line-height: 1.5;">다른 가족들도 할머니를 위해<br>축하 메시지를 가득 남겼어요!</p>
-            <button id="go-to-guestbook-btn" class="btn-primary festive-btn" style="font-size: 1.8rem;">👨‍👩‍👧‍👦 가족 편지함 열기</button>
+        <div class="content-box">
+            <div class="deco-icon">🎁</div>
+            <h2 class="sub-title" style="font-size: 2.2rem; color: #ff7e67;">효빈이의 편지 끝!</h2>
+            <p style="font-size: 1.8rem; line-height: 1.5; color: #555;">이제 다른 가족들이 남긴<br>축하 메시지를 보러 가요!</p>
+            <button id="go-to-guestbook-btn" class="btn-primary bubble-btn" style="margin-top: 20px;">👨‍👩‍👧‍👦 가족 편지함 가기</button>
         </div>
     </section>
 
     <section id="guestbook-screen" class="screen hidden">
         <div class="guestbook-header">
-            <div class="family-photo-frame decorative-frame">
+            <div class="photo-tape"></div>
+            <div class="family-photo-frame">
                 <img src="./assets/family.jpg" alt="우리 가족 사진" id="family-photo">
             </div>
-            <h2 style="color: var(--wood-dark); text-shadow: 1px 1px 2px rgba(255,255,255,0.8);">💌 가족들의 사랑이 담긴 편지함</h2>
-            <button id="write-btn" class="btn-secondary festive-btn">✏️ 나도 축하 글쓰기</button>
+            <h2>🎈 사랑의 편지함</h2>
+            <button id="write-btn" class="btn-secondary">✏️ 축하 글 남기기</button>
         </div>
         <div id="guestbook-container">
             </div>
     </section>
 
     <div id="write-modal" class="modal hidden">
-        <div class="modal-content post-it-style decorative-frame">
+        <div class="modal-content paper-style">
             <span class="close-btn">&times;</span>
-            <h3>가족 편지 남기기</h3>
-            <input type="text" id="input-name" placeholder="이름 (예: 큰아들)">
+            <h3>📝 편지 쓰기</h3>
+            <input type="text" id="input-name" placeholder="누구신가요? (예: 큰아들)">
             <input type="text" id="input-title" placeholder="제목 (예: 생신 축하드려요!)">
-            <textarea id="input-message" placeholder="할머니께 드릴 사랑의 메시지를 적어주세요."></textarea>
-            <button id="save-btn" class="btn-primary festive-btn" style="font-size: 1.5rem; padding: 15px 30px;">게시판에 붙이기</button>
+            <textarea id="input-message" placeholder="할머니께 하고 싶은 말씀을 적어주세요."></textarea>
+            <button id="save-btn" class="btn-primary bubble-btn">벽에 붙이기</button>
         </div>
     </div>
 
     <div id="read-modal" class="modal hidden">
-        <div class="modal-content post-it-style decorative-frame" style="text-align: left;">
+        <div class="modal-content paper-style read-mode">
             <span class="close-read-btn">&times;</span>
-            <div class="read-header" style="border-bottom: 2px dashed var(--gold-color); padding-bottom: 15px; margin-bottom: 15px;">
-                <h3 id="read-title" style="font-size: 2rem; margin-bottom: 10px; color: var(--accent-color);">제목</h3>
-                <span id="read-name" style="font-size: 1.3rem; color: #555; float: right; font-weight: bold;">작성자</span>
-                <div style="clear: both;"></div>
+            <div class="read-header">
+                <h3 id="read-title">제목</h3>
+                <span id="read-name">작성자</span>
             </div>
-            <div class="read-body" style="min-height: 150px; margin-bottom: 20px;">
-                <p id="read-message" style="font-size: 1.7rem; line-height: 1.6; white-space: pre-wrap; font-family: var(--hand-font);">내용</p>
+            <div class="read-body">
+                <p id="read-message">내용</p>
             </div>
-            <div class="read-footer" style="text-align: center;">
-                <button id="read-tts-btn" class="btn-small festive-btn">🔈 읽어주기</button>
+            <div class="read-footer">
+                <button id="read-tts-btn" class="btn-small">🔈 읽어주기</button>
             </div>
         </div>
     </div>
 
     <audio id="bgm-audio" src="./assets/bgm.mp3"></audio>
-    
     <script type="module" src="script.js"></script>
 </body>
 </html>

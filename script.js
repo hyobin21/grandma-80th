@@ -1,5 +1,5 @@
 // ==========================================
-// 1. 편지 내용 및 설정
+// 1. 편지 내용 설정
 // ==========================================
 const letterContent = [
     { text: "할머니, 안녕하세요!! 할머니의 막내 아들 둘째 딸인 효빈이에요!" },
@@ -10,7 +10,6 @@ const letterContent = [
     { text: "그럼에도 저희의 어린 시절을 부족함 없이 예쁘게 꽃 피워주셔서 감사합니다." },
     { text: "매일 전화한다고 해놓고 가끔 해서 죄송해요. 앞으로 더 자주 연락드릴게요. 약속해요!" },
     { text: "이 웹사이트는 제가 직접 만들었습니다. 가족 몰래 밤새워서 만들었어요!" },
-    // 2.5초 더 머물기
     { text: "어서 늦게 일어난다고 맨날 꾸중 내셨던 저희 막내 아드님께 한 마디를 부탁드려요ㅎㅎ", extraDelay: 2500 },
     { text: "새삼 할머니께서 계셔서 저희 가족들이 이 자리에 있을 수 있게 됨을 느낍니다." },
     { text: "다시 한번 저희 가족 곁에 있어 주셔서 감사하고, 태어나 주셔서 감사합니다!" },
@@ -23,7 +22,6 @@ let isTTSOn = false;
 let currentStep = 0;
 let letterTimer = null;
 
-// DOM 요소
 const introScreen = document.getElementById('intro-screen');
 const letterScreen = document.getElementById('letter-screen');
 const transitionScreen = document.getElementById('transition-screen');
@@ -33,52 +31,48 @@ const audio = document.getElementById('bgm-audio');
 const goToGuestbookBtn = document.getElementById('go-to-guestbook-btn');
 
 // ==========================================
-// 2. 파이어베이스(DB) 설정
+// 2. 파이어베이스(DB)
 // ==========================================
-// ★ 중요: 여기에 파이어베이스 API Key를 넣어야 작동합니다.
+// ★ API Key는 마지막에 꼭 넣어야 합니다.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    // 여기에 API Key를 붙여넣으세요
+    // API KEY HERE
 };
 
 let db;
 try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-} catch (e) { console.log("DB 설정 필요"); }
+} catch (e) { console.log("DB 미연결: 테스트 모드"); }
 
 // ==========================================
-// 3. 주요 기능 로직
+// 3. 메인 로직
 // ==========================================
 
 window.onload = () => { audio.volume = 1.0; };
 
-// [버튼] 편지 열기
 document.getElementById('start-btn').addEventListener('click', () => {
     introScreen.classList.add('hidden');
     letterScreen.classList.remove('hidden');
     setTimeout(() => {
-        audio.play().catch(e => console.log("자동재생 막힘"));
+        audio.play().catch(e => console.log("자동재생 방지됨"));
         showNextSentence();
     }, 1000);
     fireConfetti();
 });
 
-// [버튼] 건너뛰기
 document.getElementById('skip-btn').addEventListener('click', () => {
     finishLetter();
 });
 
-// [버튼] TTS 토글
 const ttsBtn = document.getElementById('tts-toggle-btn');
 ttsBtn.addEventListener('click', () => {
     isTTSOn = !isTTSOn;
-    ttsBtn.innerText = isTTSOn ? "🔊 음성 끄기" : "🔈 음성 켜기";
+    ttsBtn.innerText = isTTSOn ? "🔊 끄기" : "🔈 켜기";
 });
 
-// [버튼] 중간 화면 -> 방명록 이동
 goToGuestbookBtn.addEventListener('click', () => {
     transitionScreen.classList.add('hidden');
     guestbookScreen.classList.remove('hidden');
@@ -86,24 +80,17 @@ goToGuestbookBtn.addEventListener('click', () => {
     fireConfetti();
 });
 
-// 편지 보여주기 (구름 효과 + 줄바꿈)
 function showNextSentence() {
     if (currentStep >= letterContent.length) {
         finishLetter();
         return;
     }
-
     const item = letterContent[currentStep];
     const originalText = item.text;
-    // 줄바꿈 처리
-    let formattedText = originalText
-        .replace(/\. /g, '.<br>') 
-        .replace(/\! /g, '!<br>')
-        .replace(/\.\./g, '..'); 
+    let formattedText = originalText.replace(/\. /g, '.<br>').replace(/\! /g, '!<br>').replace(/\.\./g, '..');
         
-    // 애니메이션 리셋
     letterText.classList.remove('cloud-text');
-    void letterText.offsetWidth; 
+    void letterText.offsetWidth;
     letterText.innerHTML = formattedText;
     letterText.classList.add('cloud-text');
 
@@ -111,19 +98,17 @@ function showNextSentence() {
 
     let duration = (originalText.length * READ_SPEED) + 2500;
     if (item.extraDelay) duration += item.extraDelay;
-
     if (currentStep >= letterContent.length - 2) fadeOutAudio();
 
     currentStep++;
     letterTimer = setTimeout(showNextSentence, duration);
 }
 
-// 편지 끝내기
 function finishLetter() {
     clearTimeout(letterTimer);
     window.speechSynthesis.cancel();
     letterScreen.classList.add('hidden');
-    transitionScreen.classList.remove('hidden'); // 중간 화면으로
+    transitionScreen.classList.remove('hidden'); 
     fadeOutAudio();
     fireConfetti();
 }
@@ -142,16 +127,15 @@ function speakText(text) {
     window.speechSynthesis.speak(utterance);
 }
 
-// 꽃가루 효과 (더 풍성하게)
 function fireConfetti() {
     confetti({
-        particleCount: 250, spread: 120, origin: { y: 0.6 },
-        colors: ['#d4af37', '#ff6b6b', '#ffffff', '#fdfbf7'] // 금색, 코랄, 흰색 조합
+        particleCount: 150, spread: 70, origin: { y: 0.6 },
+        colors: ['#ff9ff3', '#feca57', '#48dbfb', '#ff6b6b'] // 파스텔톤 폭죽
     });
 }
 
 // ==========================================
-// 4. 롤링페이퍼 기능
+// 4. 방명록 로직
 // ==========================================
 const writeModal = document.getElementById('write-modal');
 const readModal = document.getElementById('read-modal');
@@ -169,10 +153,9 @@ document.getElementById('save-btn').addEventListener('click', async () => {
     const title = document.getElementById('input-title').value;
     const message = document.getElementById('input-message').value;
 
-    if (!name || !message) { alert("이름과 내용을 꼭 적어주세요!"); return; }
+    if (!name || !message) { alert("이름과 내용을 적어주세요!"); return; }
 
     if (!db) {
-        alert("데이터베이스 미연결: 테스트 모드로 화면에만 표시됩니다.");
         addPostItToScreen({ name, title, message });
         writeModal.classList.add('hidden');
         return;
@@ -181,13 +164,13 @@ document.getElementById('save-btn').addEventListener('click', async () => {
         await addDoc(collection(db, "letters"), {
             name, title, message, date: serverTimestamp()
         });
-        alert("편지가 성공적으로 등록되었습니다! 🎉");
+        alert("편지가 벽에 붙었습니다! 🎈");
         writeModal.classList.add('hidden');
         loadGuestbook();
         document.getElementById('input-name').value = '';
         document.getElementById('input-title').value = '';
         document.getElementById('input-message').value = '';
-    } catch (e) { console.error("Error:", e); alert("저장에 실패했습니다."); }
+    } catch (e) { console.error("Error:", e); alert("실패했습니다 ㅠㅠ"); }
 });
 
 async function loadGuestbook() {
@@ -202,8 +185,8 @@ async function loadGuestbook() {
 function addPostItToScreen(data) {
     const container = document.getElementById('guestbook-container');
     const div = document.createElement('div');
-    div.className = 'post-it festive-btn'; // 버튼 효과 추가
-    div.innerHTML = `<div class="post-it-title">${data.title || '축하합니다!'}</div><div class="post-it-name">From. ${data.name}</div>`;
+    div.className = 'post-it';
+    div.innerHTML = `<div class="post-it-title">${data.title || '축하해요!'}</div><div class="post-it-name">From. ${data.name}</div>`;
     div.addEventListener('click', () => {
         document.getElementById('read-title').innerText = data.title;
         document.getElementById('read-name').innerText = "From. " + data.name;
