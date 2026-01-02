@@ -2,34 +2,39 @@
    1. 기본 설정 & 폰트
    ========================================= */
 :root {
-    --font-cute: 'Jua', sans-serif;       /* 메인 타이틀, 버튼 (굵고 귀여움) */
-    --font-hand: 'Gaegu', cursive;        /* 손글씨 느낌 */
-    --font-body: 'Gowun Batang', serif;   /* 편지 본문 (읽기 편함) */
+    --font-cute: 'Jua', sans-serif;       /* 제목, 버튼용 */
+    --font-hand: 'Gaegu', cursive;        /* 손글씨용 */
+    --font-body: 'Gowun Batang', serif;   /* 편지 본문용 */
     
-    /* 따뜻하고 화사한 배경 그라데이션 */
+    /* 따뜻한 파스텔 그라데이션 배경 */
     --bg-gradient: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%);
     
     /* 색상 변수 */
     --primary: #ff6b81;
-    --paper-bg: #fffbf0; /* 따뜻한 미색 */
+    --paper-bg: #fffbf0;
     --text-color: #4a4a4a;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 body {
-    font-family: var(--font-cute); /* 기본 폰트를 귀여운 걸로 변경 */
+    font-family: var(--font-cute);
     color: var(--text-color);
     width: 100vw; height: 100vh;
     overflow: hidden; position: relative;
     background: var(--bg-gradient);
 }
 
-/* 질감 오버레이 (종이 질감) */
+/* ★ 터치 씹힘 방지: 배경 요소는 터치 통과 */
+.texture-overlay, .bg-deco, .paper-deco-bottom, .cloud-text {
+    pointer-events: none !important; 
+}
+
+/* 종이 질감 오버레이 */
 .texture-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'/%3E%3C/g%3E%3C/svg%3E");
-    pointer-events: none; z-index: 1; opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7z'/%3E%3C/g%3E%3C/svg%3E");
+    z-index: 1; opacity: 0.5;
 }
 
 /* =========================================
@@ -38,105 +43,102 @@ body {
 .screen {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    transition: opacity 0.8s ease; padding: 20px; z-index: 10;
+    transition: opacity 0.5s ease; padding: 20px; z-index: 10;
+    touch-action: none; /* 모바일 스크롤 방지 (화면 전체) */
 }
-.hidden { display: none !important; opacity: 0; }
+.hidden { display: none !important; opacity: 0; pointer-events: none; }
+
 .fade-in-up { animation: fadeInUp 0.8s ease; }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+/* 인트로 카드 디자인 */
 .intro-card {
     background: rgba(255, 255, 255, 0.9);
-    padding: 50px 30px; border-radius: 30px;
+    padding: 40px 30px; border-radius: 30px;
     text-align: center; width: 90%; max-width: 500px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     border: 5px solid white;
+    z-index: 100;
 }
 .icon-bounce { font-size: 4.5rem; display: block; margin-bottom: 10px; animation: bounce 2s infinite; }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-.main-title { font-size: 3rem; line-height: 1.2; color: #ff6b6b; margin-bottom: 20px; text-shadow: 2px 2px 0 #fff; }
-.sub-title { font-size: 1.4rem; color: #666; margin-bottom: 30px; font-family: var(--font-cute); }
+.main-title { font-size: 2.8rem; line-height: 1.2; color: #ff6b6b; margin-bottom: 20px; text-shadow: 2px 2px 0 #fff; }
+.sub-title { font-size: 1.3rem; color: #666; margin-bottom: 30px; font-family: var(--font-cute); }
 
-/* 버튼 */
+.description { font-size: 1.3rem; color: #555; margin-bottom: 20px; }
+
+/* 버튼 공통 설정 (터치 최적화) */
+button { 
+    cursor: pointer; position: relative; z-index: 9999;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+
 .btn-primary {
     background: var(--primary); color: white;
     font-size: 1.5rem; padding: 15px 40px; border-radius: 50px; border: none;
-    font-family: var(--font-cute); cursor: pointer;
+    font-family: var(--font-cute);
     box-shadow: 0 5px 0 #e0567a; transition: all 0.1s;
 }
 .btn-primary:active { transform: translateY(5px); box-shadow: none; }
 
 /* =========================================
-   3. 메인 편지 화면 (수정됨)
+   3. 메인 편지 화면
    ========================================= */
-/* 배경 장식 (둥둥 떠다니는 아이콘) */
 .bg-deco {
     position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-    pointer-events: none; z-index: 0; overflow: hidden;
+    overflow: hidden; z-index: 0;
 }
 .bg-deco span {
     position: absolute; font-size: 2.5rem; opacity: 0.6;
     animation: floatIcon 6s ease-in-out infinite;
 }
 .bg-deco span:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
-.bg-deco span:nth-child(2) { top: 15%; right: 15%; animation-delay: 1.5s; font-size: 2rem; }
-.bg-deco span:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 3s; font-size: 3rem; }
-.bg-deco span:nth-child(4) { bottom: 25%; right: 10%; animation-delay: 2s; }
-
+.bg-deco span:nth-child(2) { top: 15%; right: 15%; animation-delay: 1.5s; }
+.bg-deco span:nth-child(3) { bottom: 25%; left: 15%; animation-delay: 3s; }
+.bg-deco span:nth-child(4) { bottom: 30%; right: 10%; animation-delay: 2s; }
 @keyframes floatIcon {
     0%, 100% { transform: translateY(0) rotate(0deg); }
     50% { transform: translateY(-20px) rotate(10deg); }
 }
 
-/* 편지 컨테이너 프레임 */
 .letter-frame {
-    position: relative; z-index: 5;
-    width: 95%; max-width: 600px; height: 65vh;
+    position: relative; z-index: 50; 
+    width: 95%; max-width: 600px; height: 55vh; 
     display: flex; justify-content: center; align-items: center;
+    margin-bottom: 30px;
 }
 
-/* 편지지 디자인 (종이 느낌) */
 .letter-paper {
     background-color: var(--paper-bg);
-    width: 100%; height: 100%;
-    padding: 40px;
+    width: 100%; height: 100%; padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15), 0 0 0 8px rgba(255,255,255,0.5); /* 이중 테두리 */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     position: relative;
-    /* 줄무늬 노트 효과 */
     background-image: repeating-linear-gradient(var(--paper-bg) 0px, var(--paper-bg) 38px, #abd4ff 39px);
 }
 
-.paper-pin {
-    position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-    font-size: 2.5rem; z-index: 10;
-}
-.paper-deco-bottom {
-    position: absolute; bottom: 10px; right: 20px; font-size: 3rem; opacity: 0.8;
-}
+.paper-pin { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 2.5rem; z-index: 60; }
+.paper-deco-bottom { position: absolute; bottom: 10px; right: 20px; font-size: 3rem; opacity: 0.8; }
 
-/* 글자 스타일 (굵고 잘 보이게) */
 #letter-text {
-    font-family: var(--font-cute); /* 주아체 */
-    font-size: 2.4rem; line-height: 1.6;
+    font-family: var(--font-cute); font-size: 2.2rem; line-height: 1.5;
     color: #333; text-align: center;
-    background: rgba(255, 251, 240, 0.9); /* 글자 배경 살짝 깔아서 가독성 확보 */
-    padding: 20px; border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    background: rgba(255, 251, 240, 0.95);
+    padding: 20px; border-radius: 15px; width: 100%;
     word-break: keep-all;
 }
 
-/* 구름 효과 */
-.cloud-text { animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-@keyframes popIn {
-    0% { opacity: 0; transform: scale(0.5); }
-    100% { opacity: 1; transform: scale(1); }
-}
+.cloud-text { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
 
-/* 컨트롤 버튼들 */
-.top-controls { position: absolute; top: 20px; right: 20px; z-index: 20; }
-.bottom-controls { position: absolute; bottom: 40px; right: 20px; z-index: 20; width: 100%; text-align: center; }
+/* ★ 컨트롤 영역 (모바일 최적화) */
+.top-controls { position: absolute; top: 20px; right: 20px; z-index: 9999; }
+.bottom-controls { 
+    position: absolute; bottom: 12%; /* 하단 여백 충분히 확보 */
+    width: 100%; text-align: center; z-index: 9999;
+}
 
 .pill-btn {
     background: white; border: 2px solid #ddd;
@@ -144,92 +146,79 @@ body {
     font-family: var(--font-cute); font-size: 1.2rem; cursor: pointer;
 }
 
-/* 건너뛰기 버튼 (확실하게 보이게 수정) */
+/* 건너뛰기 버튼 */
 .btn-skip {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(5px);
-    border: 2px solid white;
-    color: #555; font-family: var(--font-cute); font-size: 1.3rem;
-    padding: 12px 30px; border-radius: 30px; cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: background 0.3s;
+    background: rgba(255, 255, 255, 0.95); 
+    color: var(--primary);
+    border: 3px solid var(--primary);
+    font-family: var(--font-cute); font-size: 1.3rem; font-weight: bold;
+    padding: 14px 40px; border-radius: 40px; 
+    box-shadow: 0 5px 15px rgba(255, 107, 129, 0.3);
+    transition: transform 0.1s;
 }
-.btn-skip:hover { background: white; color: var(--primary); }
+.btn-skip:active { transform: scale(0.95); background: #ffe0e6; }
+
+/* 마지막 단계 버튼 애니메이션 */
+.btn-pulse { animation: pulse 1.5s infinite; background: var(--primary); color: white; border-color: white; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
 
 /* =========================================
-   4. 방명록 (기존 디자인 유지 + 폰트만 적용)
+   4. 방명록 & 모달
    ========================================= */
 .guestbook-wrapper { max-width: 1000px; margin: 0 auto; padding: 40px 20px 100px; }
-#guestbook-screen { overflow-y: scroll; display: block; }
-.guestbook-header { text-align: center; margin-bottom: 50px; margin-top: 40px; }
+#guestbook-screen { 
+    overflow-y: auto; display: block; 
+    -webkit-overflow-scrolling: touch; 
+    touch-action: pan-y; /* 스크롤 허용 */
+}
+.guestbook-header { text-align: center; margin-bottom: 30px; margin-top: 40px; }
 
 .photo-card {
-    width: 200px; height: 200px; margin: 0 auto 20px;
+    width: 180px; height: 180px; margin: 0 auto 20px;
     border-radius: 50%; border: 6px solid white;
     box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden;
 }
 #family-photo { width: 100%; height: 100%; object-fit: cover; }
+#guestbook-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding-bottom: 100px; }
 
-#guestbook-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-
-/* 카드 스타일 */
 .card-item {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(10px);
-    border-radius: 16px; padding: 24px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    border: 1px solid rgba(255,255,255,0.8);
-    cursor: pointer; min-height: 180px;
+    background: rgba(255,255,255,0.8); border-radius: 16px; padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; min-height: 160px;
     display: flex; flex-direction: column; justify-content: space-between;
-    transition: transform 0.2s;
 }
-.card-item:hover { transform: translateY(-5px); background: white; }
-.card-item:nth-child(4n+1) { background: rgba(255, 230, 230, 0.8); }
-.card-item:nth-child(4n+2) { background: rgba(230, 240, 255, 0.8); }
+.card-item:nth-child(4n+1) { background: #fff5f5; }
+.card-item:nth-child(4n+2) { background: #f0f8ff; }
 
-.card-title { font-family: var(--font-cute); font-size: 1.5rem; margin-bottom: 10px; color: #333; }
-.card-name { font-family: var(--font-hand); font-size: 1.2rem; color: #777; text-align: right; }
+.card-title { font-size: 1.4rem; font-weight: bold; margin-bottom: 5px; color: #333; }
+.card-name { font-size: 1.1rem; color: #666; text-align: right; }
 
-/* 플로팅 버튼 */
 .btn-floating {
     position: fixed; bottom: 30px; right: 30px;
     width: 65px; height: 65px; border-radius: 50%;
     background: var(--primary); color: white; border: none; font-size: 2rem;
-    box-shadow: 0 10px 20px rgba(255, 107, 129, 0.4); z-index: 100; cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 2000;
 }
 
-/* 모달 */
 .modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 200;
+    background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 3000;
 }
 .modal-card {
-    background: white; width: 90%; max-width: 450px;
-    border-radius: 25px; padding: 30px; text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2); position: relative;
+    background: white; width: 90%; max-width: 400px;
+    border-radius: 20px; padding: 25px; text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;
 }
 .input-group { margin-bottom: 15px; text-align: left; }
-.input-group label { margin-left: 5px; color: #888; font-size: 0.9rem; font-family: var(--font-cute); }
-input, textarea {
-    width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px;
-    font-family: var(--font-cute); font-size: 1.1rem;
-}
-textarea { height: 120px; resize: none; }
-.btn-full { width: 100%; background: var(--primary); color: white; padding: 15px; border-radius: 15px; border: none; font-family: var(--font-cute); font-size: 1.3rem; margin-top: 10px; cursor: pointer; }
-.close-btn, .close-read-btn { position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer; color: #aaa; background: none; border: none; }
+.input-group label { margin-left: 5px; color: #888; font-size: 0.9rem; }
+input, textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-family: var(--font-cute); font-size: 1.1rem; }
+textarea { height: 100px; resize: none; }
+.btn-full { width: 100%; background: var(--primary); color: white; padding: 12px; border-radius: 12px; border: none; font-size: 1.3rem; margin-top: 10px; }
+.close-btn, .close-read-btn { position: absolute; top: 10px; right: 15px; font-size: 2rem; color: #999; background: none; border: none; }
 
 .read-mode { text-align: left; }
-.read-header { margin-bottom: 10px; }
-.badge { background: #ffeaa7; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; color: #d35400; font-family: var(--font-cute); }
-#read-title { font-family: var(--font-cute); font-size: 1.8rem; margin: 10px 0; }
+.read-header { margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }
+.badge { background: #ffeaa7; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; color: #d35400; }
+#read-title { font-size: 1.8rem; margin: 10px 0; }
 .read-body p { font-family: var(--font-body); font-size: 1.4rem; line-height: 1.6; white-space: pre-wrap; }
-.pill-btn-small { background: #f1f2f6; border: none; padding: 8px 15px; border-radius: 15px; font-family: var(--font-cute); margin-top: 20px; cursor: pointer; }
-
-/* 모바일 조정 */
-@media (max-width: 768px) {
-    .main-title { font-size: 2.5rem; }
-    #letter-text { font-size: 2rem; }
-    .letter-paper { padding: 30px 20px; }
-    .bg-deco span { font-size: 2rem; }
-}
+.pill-btn-small { background: #f1f2f6; border: none; padding: 8px 15px; border-radius: 15px; font-family: var(--font-cute); margin-top: 20px; }

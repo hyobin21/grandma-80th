@@ -1,6 +1,5 @@
-// ...existing code...
 // ==========================================
-// 1. 편지 내용
+// 1. 편지 내용 설정
 // ==========================================
 const letterContent = [
     { text: "할머니, 안녕하세요!! 할머니의 막내 아들 둘째 딸인 효빈이에요!" },
@@ -14,31 +13,36 @@ const letterContent = [
     { text: "어서 늦게 일어난다고 맨날 꾸중 내셨던 저희 막내 아드님께 한 마디를 부탁드려요ㅎㅎ", extraDelay: 2500 },
     { text: "새삼 할머니께서 계셔서 저희 가족들이 이 자리에 있을 수 있게 됨을 느낍니다." },
     { text: "다시 한번 저희 가족 곁에 있어 주셔서 감사하고, 태어나 주셔서 감사합니다!" },
-    { text: "항상 건강하세요! 팔순 축하드립니다.", isLast: true },
-    { text: "- 김효빈 올림 -", isLast: true }
+    { text: "항상 건강하세요! 팔순 축하드립니다." },
+    { text: "- 김효빈 올림 -" }
 ];
 
-const READ_SPEED = 150; 
+// 설정
+const READ_SPEED = 180; 
 let isTTSOn = false;
 let currentStep = 0;
 let letterTimer = null;
+let isFinished = false;
 
+// DOM 요소
 const introScreen = document.getElementById('intro-screen');
 const letterScreen = document.getElementById('letter-screen');
 const transitionScreen = document.getElementById('transition-screen');
 const guestbookScreen = document.getElementById('guestbook-screen');
 const letterText = document.getElementById('letter-text');
 const audio = document.getElementById('bgm-audio');
+const skipBtn = document.getElementById('skip-btn');
 const goToGuestbookBtn = document.getElementById('go-to-guestbook-btn');
+const ttsBtn = document.getElementById('tts-toggle-btn');
 
 // ==========================================
-// 2. 파이어베이스 설정 (API KEY 확인 필수)
+// 2. 파이어베이스 (API KEY 필수)
 // ==========================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    // API Key 붙여넣으세요
+    // 여기에 API 키를 넣어주세요
 };
 
 let db;
@@ -48,68 +52,50 @@ try {
 } catch (e) { console.log("DB 없음: 데모 모드"); }
 
 // ==========================================
-// 3. 로직
+// 3. 실행 로직
 // ==========================================
 
 window.onload = () => { audio.volume = 1.0; };
 
-// Helper: click + touch 바인딩 (모바일 터치에서 버튼이 동작하지 않는 문제 대응)
-function bindClickAndTouch(elem, handler) {
-    if (!elem) return;
-    elem.addEventListener('click', handler);
-    elem.addEventListener('touchend', function (e) {
-        e.preventDefault();
-        handler(e);
-    }, { passive: false });
-}
-
-const startBtn = document.getElementById('start-btn');
-const skipBtn = document.getElementById('skip-btn');
-const ttsBtn = document.getElementById('tts-toggle-btn');
-const writeBtn = document.getElementById('write-btn');
-const saveBtn = document.getElementById('save-btn');
-
-function startIntro() {
+document.getElementById('start-btn').addEventListener('click', () => {
     introScreen.classList.add('hidden');
     letterScreen.classList.remove('hidden');
-    setTimeout(() => {
-        audio.play().catch(e => console.log("자동재생 막힘"));
-        showNextSentence();
-    }, 800);
+    audio.play().catch(e => console.log("자동재생 차단됨"));
+    setTimeout(showNextSentence, 800);
     fireConfetti();
-}
+});
 
-function skipLetter() {
+// 건너뛰기 버튼 (강제 이동)
+skipBtn.addEventListener('click', () => {
     finishLetter();
-}
+});
 
-function toggleTTS() {
+ttsBtn.addEventListener('click', () => {
     isTTSOn = !isTTSOn;
     ttsBtn.innerText = isTTSOn ? "🔊 소리 끄기" : "🔈 소리 켜기";
-}
+});
 
-function goToGuestbook() {
+goToGuestbookBtn.addEventListener('click', () => {
     transitionScreen.classList.add('hidden');
     guestbookScreen.classList.remove('hidden');
     loadGuestbook();
     fireConfetti();
-}
+});
 
-bindClickAndTouch(startBtn, startIntro);
-bindClickAndTouch(skipBtn, skipLetter);
-bindClickAndTouch(ttsBtn, toggleTTS);
-bindClickAndTouch(goToGuestbookBtn, goToGuestbook);
-
-// 기존 로직 계속...
 function showNextSentence() {
+    if (isFinished) return;
+    
+    // 편지 끝 확인
     if (currentStep >= letterContent.length) {
-        finishLetter();
+        // 끝나면 2초 뒤 자동 이동 시도
+        setTimeout(finishLetter, 2000);
         return;
     }
+
     const item = letterContent[currentStep];
     const originalText = item.text;
     let formattedText = originalText.replace(/\. /g, '.<br>').replace(/\! /g, '!<br>');
-        
+
     letterText.classList.remove('cloud-text');
     void letterText.offsetWidth; 
     letterText.innerHTML = formattedText;
@@ -117,19 +103,36 @@ function showNextSentence() {
 
     if (isTTSOn) speakText(originalText);
 
-    let duration = (originalText.length * READ_SPEED) + 2500;
+    let duration = (originalText.length * READ_SPEED) + 2000;
     if (item.extraDelay) duration += item.extraDelay;
+
     if (currentStep >= letterContent.length - 2) fadeOutAudio();
+    
+    // ★ 마지막 문장이면 버튼 변경 & 안전장치
+    if (currentStep === letterContent.length - 1) {
+        skipBtn.innerHTML = "👨‍👩‍👧‍👦 가족 편지 보러가기 >>";
+        skipBtn.classList.add("btn-pulse");
+        skipBtn.style.zIndex = "99999";
+        
+        // 5초 뒤에도 안 넘어가면 강제 이동
+        setTimeout(() => { if (!isFinished) finishLetter(); }, duration + 4000);
+    }
 
     currentStep++;
+    clearTimeout(letterTimer);
     letterTimer = setTimeout(showNextSentence, duration);
 }
 
 function finishLetter() {
+    if (isFinished) return;
+    isFinished = true;
+
     clearTimeout(letterTimer);
     window.speechSynthesis.cancel();
+    
     letterScreen.classList.add('hidden');
     transitionScreen.classList.remove('hidden'); 
+    
     fadeOutAudio();
     fireConfetti();
 }
@@ -151,27 +154,25 @@ function speakText(text) {
 function fireConfetti() {
     confetti({
         particleCount: 150, spread: 100, origin: { y: 0.6 },
-        colors: ['#ff9a9e', '#fad0c4', '#fff', '#ff6b81']
+        colors: ['#ff9a9e', '#fad0c4', '#ffffff', '#ff6b81']
     });
 }
 
 // ==========================================
-// 4. 방명록 & 모달
+// 4. 방명록 로직
 // ==========================================
 const writeModal = document.getElementById('write-modal');
 const readModal = document.getElementById('read-modal');
 
-bindClickAndTouch(writeBtn, () => writeModal.classList.remove('hidden'));
-
-// 닫기 버튼들에 대해서도 touch 지원 추가
+document.getElementById('write-btn').addEventListener('click', () => writeModal.classList.remove('hidden'));
 document.querySelectorAll('.close-btn, .close-read-btn').forEach(btn => {
-    bindClickAndTouch(btn, () => {
+    btn.addEventListener('click', () => {
         writeModal.classList.add('hidden');
         readModal.classList.add('hidden');
     });
 });
 
-bindClickAndTouch(saveBtn, async () => {
+document.getElementById('save-btn').addEventListener('click', async () => {
     const name = document.getElementById('input-name').value;
     const title = document.getElementById('input-title').value;
     const message = document.getElementById('input-message').value;
@@ -187,7 +188,7 @@ bindClickAndTouch(saveBtn, async () => {
         await addDoc(collection(db, "letters"), {
             name, title, message, date: serverTimestamp()
         });
-        alert("편지를 붙였어요! 📌");
+        alert("편지가 등록되었습니다! 📌");
         writeModal.classList.add('hidden');
         loadGuestbook();
         document.getElementById('input-name').value = '';
@@ -210,28 +211,12 @@ function addCardToScreen(data) {
     const div = document.createElement('div');
     div.className = 'card-item'; 
     div.innerHTML = `<div class="card-title">${data.title || '축하해요!'}</div><div class="card-name">From. ${data.name}</div>`;
-    
     div.addEventListener('click', () => {
         document.getElementById('read-title').innerText = data.title;
         document.getElementById('read-name').innerText = data.name;
         document.getElementById('read-message').innerText = data.message;
-        // 읽어주기 버튼에 터치 지원 추가
-        const readTtsBtn = document.getElementById('read-tts-btn');
-        readTtsBtn.onclick = () => speakText(data.message);
-        bindClickAndTouch(readTtsBtn, () => speakText(data.message));
+        document.getElementById('read-tts-btn').onclick = () => speakText(data.message);
         readModal.classList.remove('hidden');
     });
-    // 카드 클릭에 대해서도 touch 지원
-    bindClickAndTouch(div, () => {
-        document.getElementById('read-title').innerText = data.title;
-        document.getElementById('read-name').innerText = data.name;
-        document.getElementById('read-message').innerText = data.message;
-        const readTtsBtn = document.getElementById('read-tts-btn');
-        readTtsBtn.onclick = () => speakText(data.message);
-        bindClickAndTouch(readTtsBtn, () => speakText(data.message));
-        readModal.classList.remove('hidden');
-    });
-
     container.appendChild(div);
 }
-// ...existing code...
