@@ -1,5 +1,5 @@
 // ==========================================
-// 1. 편지 데이터 (수정할 부분 없음)
+// 1. 편지 내용
 // ==========================================
 const letterContent = [
     { text: "할머니, 안녕하세요!! 할머니의 막내 아들 둘째 딸인 효빈이에요!" },
@@ -31,23 +31,23 @@ const audio = document.getElementById('bgm-audio');
 const goToGuestbookBtn = document.getElementById('go-to-guestbook-btn');
 
 // ==========================================
-// 2. Firebase (API KEY 입력 필요)
+// 2. 파이어베이스 설정 (API KEY 확인 필수)
 // ==========================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    // 여기에 파이어베이스 API 키를 넣으세요
+    // API Key 붙여넣으세요
 };
 
 let db;
 try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-} catch (e) { console.log("DB 미연결: 데모 모드"); }
+} catch (e) { console.log("DB 없음: 데모 모드"); }
 
 // ==========================================
-// 3. 메인 로직
+// 3. 로직
 // ==========================================
 
 window.onload = () => { audio.volume = 1.0; };
@@ -56,7 +56,7 @@ document.getElementById('start-btn').addEventListener('click', () => {
     introScreen.classList.add('hidden');
     letterScreen.classList.remove('hidden');
     setTimeout(() => {
-        audio.play().catch(e => console.log("Audio Autoplay Blocked"));
+        audio.play().catch(e => console.log("자동재생 막힘"));
         showNextSentence();
     }, 800);
     fireConfetti();
@@ -87,7 +87,7 @@ function showNextSentence() {
     let formattedText = originalText.replace(/\. /g, '.<br>').replace(/\! /g, '!<br>');
         
     letterText.classList.remove('cloud-text');
-    void letterText.offsetWidth; // Trigger reflow
+    void letterText.offsetWidth; 
     letterText.innerHTML = formattedText;
     letterText.classList.add('cloud-text');
 
@@ -127,12 +127,12 @@ function speakText(text) {
 function fireConfetti() {
     confetti({
         particleCount: 150, spread: 100, origin: { y: 0.6 },
-        colors: ['#ff9a9e', '#fad0c4', '#a18cd1', '#ffffff'] // 배경톤에 맞춘 색상
+        colors: ['#ff9a9e', '#fad0c4', '#fff', '#ff6b81']
     });
 }
 
 // ==========================================
-// 4. 방명록 로직 (카드 스타일 적용)
+// 4. 방명록 & 모달
 // ==========================================
 const writeModal = document.getElementById('write-modal');
 const readModal = document.getElementById('read-modal');
@@ -150,7 +150,7 @@ document.getElementById('save-btn').addEventListener('click', async () => {
     const title = document.getElementById('input-title').value;
     const message = document.getElementById('input-message').value;
 
-    if (!name || !message) { alert("이름과 내용은 필수입니다!"); return; }
+    if (!name || !message) { alert("이름과 내용을 적어주세요!"); return; }
 
     if (!db) {
         addCardToScreen({ name, title, message });
@@ -161,14 +161,13 @@ document.getElementById('save-btn').addEventListener('click', async () => {
         await addDoc(collection(db, "letters"), {
             name, title, message, date: serverTimestamp()
         });
-        alert("성공적으로 등록되었습니다! ✨");
+        alert("편지를 붙였어요! 📌");
         writeModal.classList.add('hidden');
         loadGuestbook();
-        // 입력창 초기화
         document.getElementById('input-name').value = '';
         document.getElementById('input-title').value = '';
         document.getElementById('input-message').value = '';
-    } catch (e) { console.error("Error:", e); alert("저장 실패 ㅠㅠ"); }
+    } catch (e) { console.error("Error:", e); alert("저장 실패"); }
 });
 
 async function loadGuestbook() {
@@ -183,7 +182,7 @@ async function loadGuestbook() {
 function addCardToScreen(data) {
     const container = document.getElementById('guestbook-container');
     const div = document.createElement('div');
-    div.className = 'card-item'; // CSS 클래스 변경
+    div.className = 'card-item'; 
     div.innerHTML = `<div class="card-title">${data.title || '축하해요!'}</div><div class="card-name">From. ${data.name}</div>`;
     
     div.addEventListener('click', () => {

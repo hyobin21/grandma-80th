@@ -1,239 +1,235 @@
 /* =========================================
-   1. Design Token (세련된 컬러 & 폰트)
+   1. 기본 설정 & 폰트
    ========================================= */
 :root {
-    --font-main: 'Gowun Dodum', sans-serif;   /* 깔끔한 본문 */
-    --font-serif: 'Gowun Batang', serif;      /* 진중한 편지 */
-    --font-hand: 'Gaegu', cursive;            /* 귀여운 손글씨 */
+    --font-cute: 'Jua', sans-serif;       /* 메인 타이틀, 버튼 (굵고 귀여움) */
+    --font-hand: 'Gaegu', cursive;        /* 손글씨 느낌 */
+    --font-body: 'Gowun Batang', serif;   /* 편지 본문 (읽기 편함) */
     
-    /* 몽환적인 그라데이션 배경 색상 */
-    --bg-gradient: linear-gradient(-45deg, #ff9a9e, #fad0c4, #ffd1ff, #a18cd1);
+    /* 따뜻하고 화사한 배경 그라데이션 */
+    --bg-gradient: linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%);
     
-    /* Glassmorphism (유리 효과) 변수 */
-    --glass-bg: rgba(255, 255, 255, 0.65);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.8);
-    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    --glass-blur: blur(12px);
-
-    /* 포인트 컬러 */
+    /* 색상 변수 */
     --primary: #ff6b81;
-    --primary-hover: #ff4757;
-    --text-dark: #2f3542;
-    --text-gray: #57606f;
+    --paper-bg: #fffbf0; /* 따뜻한 미색 */
+    --text-color: #4a4a4a;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 body {
-    font-family: var(--font-main);
-    color: var(--text-dark);
+    font-family: var(--font-cute); /* 기본 폰트를 귀여운 걸로 변경 */
+    color: var(--text-color);
     width: 100vw; height: 100vh;
     overflow: hidden; position: relative;
-    
-    /* 움직이는 배경 설정 */
     background: var(--bg-gradient);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
 }
 
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* 질감 오버레이 (종이 느낌) */
-.noise-overlay {
+/* 질감 오버레이 (종이 질감) */
+.texture-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: url('https://grainy-gradients.vercel.app/noise.svg');
-    opacity: 0.4; pointer-events: none; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1; opacity: 0.5;
 }
 
 /* =========================================
-   2. Layout & Glass Component
+   2. 레이아웃 & 공통 스타일
    ========================================= */
 .screen {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    transition: opacity 0.6s ease; padding: 20px; z-index: 10;
+    transition: opacity 0.8s ease; padding: 20px; z-index: 10;
 }
 .hidden { display: none !important; opacity: 0; }
-
-/* 유리 카드 스타일 (핵심 디자인) */
-.glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur); /* 사파리 호환 */
-    border: var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: 24px;
-    padding: 60px 40px;
-    text-align: center;
-    max-width: 500px; width: 90%;
-}
-
-.fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.fade-in-up { animation: fadeInUp 0.8s ease; }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* =========================================
-   3. Typography & Icons
-   ========================================= */
-.icon-bounce { font-size: 4rem; margin-bottom: 10px; display: inline-block; animation: bounce 2s infinite; }
-@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-.main-title {
-    font-family: var(--font-serif);
-    font-size: 2.8rem; font-weight: 700; line-height: 1.2;
-    margin-bottom: 20px; color: var(--text-dark);
+.intro-card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 50px 30px; border-radius: 30px;
+    text-align: center; width: 90%; max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 5px solid white;
 }
-.sub-title { font-size: 1.1rem; color: var(--text-gray); line-height: 1.6; margin-bottom: 40px; }
-.description { font-size: 1rem; color: var(--text-gray); margin-bottom: 30px; line-height: 1.5; }
+.icon-bounce { font-size: 4.5rem; display: block; margin-bottom: 10px; animation: bounce 2s infinite; }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-/* =========================================
-   4. Buttons (Modern Pill Shape)
-   ========================================= */
-button { cursor: pointer; border: none; outline: none; transition: all 0.2s ease; font-family: var(--font-main); }
+.main-title { font-size: 3rem; line-height: 1.2; color: #ff6b6b; margin-bottom: 20px; text-shadow: 2px 2px 0 #fff; }
+.sub-title { font-size: 1.4rem; color: #666; margin-bottom: 30px; font-family: var(--font-cute); }
 
+/* 버튼 */
 .btn-primary {
     background: var(--primary); color: white;
-    font-size: 1.2rem; font-weight: bold;
-    padding: 16px 48px; border-radius: 50px;
-    box-shadow: 0 10px 20px rgba(255, 107, 129, 0.3);
+    font-size: 1.5rem; padding: 15px 40px; border-radius: 50px; border: none;
+    font-family: var(--font-cute); cursor: pointer;
+    box-shadow: 0 5px 0 #e0567a; transition: all 0.1s;
 }
-.btn-primary:active { transform: scale(0.96); box-shadow: 0 5px 10px rgba(255, 107, 129, 0.2); }
-
-.pill-btn {
-    background: rgba(255,255,255,0.8); padding: 8px 20px; border-radius: 30px;
-    font-size: 0.9rem; font-weight: 600; color: var(--text-gray);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.text-btn {
-    background: transparent; color: rgba(255,255,255,0.8);
-    font-size: 1rem; font-weight: 500; text-decoration: underline;
-    padding: 10px 20px;
-}
-
-/* 방명록 플로팅 버튼 */
-.btn-floating {
-    position: fixed; bottom: 30px; right: 30px;
-    width: 60px; height: 60px; border-radius: 50%;
-    background: var(--primary); color: white; font-size: 1.8rem;
-    box-shadow: 0 10px 25px rgba(255, 107, 129, 0.4);
-    z-index: 100; display: flex; justify-content: center; align-items: center;
-}
-.btn-floating:hover { transform: translateY(-3px) rotate(10deg); }
+.btn-primary:active { transform: translateY(5px); box-shadow: none; }
 
 /* =========================================
-   5. 편지 화면
+   3. 메인 편지 화면 (수정됨)
    ========================================= */
-#letter-container {
-    height: 60vh; display: flex; justify-content: center; align-items: center;
-    position: relative;
-    background: rgba(255, 255, 255, 0.85); /* 글자 가독성을 위해 좀 더 불투명 */
+/* 배경 장식 (둥둥 떠다니는 아이콘) */
+.bg-deco {
+    position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+    pointer-events: none; z-index: 0; overflow: hidden;
 }
-.letter-inner { width: 100%; }
+.bg-deco span {
+    position: absolute; font-size: 2.5rem; opacity: 0.6;
+    animation: floatIcon 6s ease-in-out infinite;
+}
+.bg-deco span:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+.bg-deco span:nth-child(2) { top: 15%; right: 15%; animation-delay: 1.5s; font-size: 2rem; }
+.bg-deco span:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 3s; font-size: 3rem; }
+.bg-deco span:nth-child(4) { bottom: 25%; right: 10%; animation-delay: 2s; }
+
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+/* 편지 컨테이너 프레임 */
+.letter-frame {
+    position: relative; z-index: 5;
+    width: 95%; max-width: 600px; height: 65vh;
+    display: flex; justify-content: center; align-items: center;
+}
+
+/* 편지지 디자인 (종이 느낌) */
+.letter-paper {
+    background-color: var(--paper-bg);
+    width: 100%; height: 100%;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15), 0 0 0 8px rgba(255,255,255,0.5); /* 이중 테두리 */
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    position: relative;
+    /* 줄무늬 노트 효과 */
+    background-image: repeating-linear-gradient(var(--paper-bg) 0px, var(--paper-bg) 38px, #abd4ff 39px);
+}
+
+.paper-pin {
+    position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+    font-size: 2.5rem; z-index: 10;
+}
+.paper-deco-bottom {
+    position: absolute; bottom: 10px; right: 20px; font-size: 3rem; opacity: 0.8;
+}
+
+/* 글자 스타일 (굵고 잘 보이게) */
 #letter-text {
-    font-family: var(--font-serif);
-    font-size: 2.2rem; line-height: 1.7; font-weight: 600;
-    color: #333; word-break: keep-all; opacity: 0;
+    font-family: var(--font-cute); /* 주아체 */
+    font-size: 2.4rem; line-height: 1.6;
+    color: #333; text-align: center;
+    background: rgba(255, 251, 240, 0.9); /* 글자 배경 살짝 깔아서 가독성 확보 */
+    padding: 20px; border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    word-break: keep-all;
 }
 
 /* 구름 효과 */
-.cloud-text { animation: blurIn 1.5s ease forwards; }
-@keyframes blurIn {
-    0% { opacity: 0; filter: blur(10px); transform: scale(0.95); }
-    100% { opacity: 1; filter: blur(0); transform: scale(1); }
+.cloud-text { animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes popIn {
+    0% { opacity: 0; transform: scale(0.5); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
-/* 컨트롤 바 위치 (모바일 고려) */
-.control-bar-top { position: absolute; top: 20px; right: 20px; z-index: 50; }
-.control-bar-bottom { position: absolute; bottom: 30px; right: 20px; z-index: 50; }
+/* 컨트롤 버튼들 */
+.top-controls { position: absolute; top: 20px; right: 20px; z-index: 20; }
+.bottom-controls { position: absolute; bottom: 40px; right: 20px; z-index: 20; width: 100%; text-align: center; }
+
+.pill-btn {
+    background: white; border: 2px solid #ddd;
+    padding: 8px 20px; border-radius: 20px;
+    font-family: var(--font-cute); font-size: 1.2rem; cursor: pointer;
+}
+
+/* 건너뛰기 버튼 (확실하게 보이게 수정) */
+.btn-skip {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(5px);
+    border: 2px solid white;
+    color: #555; font-family: var(--font-cute); font-size: 1.3rem;
+    padding: 12px 30px; border-radius: 30px; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: background 0.3s;
+}
+.btn-skip:hover { background: white; color: var(--primary); }
+
 
 /* =========================================
-   6. 방명록 (Grid Card Layout)
+   4. 방명록 (기존 디자인 유지 + 폰트만 적용)
    ========================================= */
-#guestbook-screen { overflow-y: scroll; display: block; padding-top: 0; }
 .guestbook-wrapper { max-width: 1000px; margin: 0 auto; padding: 40px 20px 100px; }
-
+#guestbook-screen { overflow-y: scroll; display: block; }
 .guestbook-header { text-align: center; margin-bottom: 50px; margin-top: 40px; }
+
 .photo-card {
     width: 200px; height: 200px; margin: 0 auto 20px;
-    border-radius: 50%; border: 5px solid white;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;
-    position: relative;
+    border-radius: 50%; border: 6px solid white;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15); overflow: hidden;
 }
 #family-photo { width: 100%; height: 100%; object-fit: cover; }
 
-#guestbook-container {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
-}
+#guestbook-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
 
 /* 카드 스타일 */
 .card-item {
-    background: rgba(255,255,255,0.8);
-    backdrop-filter: blur(5px);
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
     border-radius: 16px; padding: 24px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer; border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.8);
+    cursor: pointer; min-height: 180px;
     display: flex; flex-direction: column; justify-content: space-between;
-    min-height: 180px;
+    transition: transform 0.2s;
 }
-.card-item:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); background: white; }
+.card-item:hover { transform: translateY(-5px); background: white; }
+.card-item:nth-child(4n+1) { background: rgba(255, 230, 230, 0.8); }
+.card-item:nth-child(4n+2) { background: rgba(230, 240, 255, 0.8); }
 
-.card-title { font-family: var(--font-hand); font-size: 1.6rem; font-weight: bold; margin-bottom: 10px; color: #333; }
-.card-name { font-size: 0.9rem; color: #888; text-align: right; margin-top: auto; }
+.card-title { font-family: var(--font-cute); font-size: 1.5rem; margin-bottom: 10px; color: #333; }
+.card-name { font-family: var(--font-hand); font-size: 1.2rem; color: #777; text-align: right; }
 
-/* 색상 베리에이션 (파스텔) */
-.card-item:nth-child(4n+1) { background: rgba(255, 236, 239, 0.85); } /* Pink */
-.card-item:nth-child(4n+2) { background: rgba(236, 245, 255, 0.85); } /* Blue */
-.card-item:nth-child(4n+3) { background: rgba(255, 250, 225, 0.85); } /* Yellow */
+/* 플로팅 버튼 */
+.btn-floating {
+    position: fixed; bottom: 30px; right: 30px;
+    width: 65px; height: 65px; border-radius: 50%;
+    background: var(--primary); color: white; border: none; font-size: 2rem;
+    box-shadow: 0 10px 20px rgba(255, 107, 129, 0.4); z-index: 100; cursor: pointer;
+}
 
-/* =========================================
-   7. Modal (Clean & Simple)
-   ========================================= */
+/* 모달 */
 .modal {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.3); backdrop-filter: blur(4px);
-    display: flex; justify-content: center; align-items: center; z-index: 200;
+    background: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; z-index: 200;
 }
 .modal-card {
     background: white; width: 90%; max-width: 450px;
-    border-radius: 24px; padding: 30px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-    position: relative; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-radius: 25px; padding: 30px; text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2); position: relative;
 }
-@keyframes modalPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-.close-btn, .close-read-btn {
-    position: absolute; top: 20px; right: 20px;
-    font-size: 1.5rem; background: #f1f2f6; width: 32px; height: 32px;
-    border-radius: 50%; color: #555; display: flex; justify-content: center; align-items: center;
-}
-
-.input-group { margin-bottom: 20px; text-align: left; }
-.input-group label { display: block; font-size: 0.9rem; color: #777; margin-bottom: 8px; margin-left: 5px; }
+.input-group { margin-bottom: 15px; text-align: left; }
+.input-group label { margin-left: 5px; color: #888; font-size: 0.9rem; font-family: var(--font-cute); }
 input, textarea {
-    width: 100%; padding: 12px 16px; border: 2px solid #f1f2f6; border-radius: 12px;
-    font-family: var(--font-main); font-size: 1rem; transition: border 0.2s;
+    width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px;
+    font-family: var(--font-cute); font-size: 1.1rem;
 }
-input:focus, textarea:focus { border-color: var(--primary); }
 textarea { height: 120px; resize: none; }
-.btn-full { width: 100%; background: var(--primary); color: white; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; }
+.btn-full { width: 100%; background: var(--primary); color: white; padding: 15px; border-radius: 15px; border: none; font-family: var(--font-cute); font-size: 1.3rem; margin-top: 10px; cursor: pointer; }
+.close-btn, .close-read-btn { position: absolute; top: 15px; right: 20px; font-size: 2rem; cursor: pointer; color: #aaa; background: none; border: none; }
 
-/* 읽기 모드 스타일 */
 .read-mode { text-align: left; }
-.read-header { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-.badge { background: #ffeaa7; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; color: #d35400; }
-.divider { height: 1px; background: #eee; margin: 15px 0; }
-.read-body p { font-family: var(--font-hand); font-size: 1.5rem; line-height: 1.6; color: #444; white-space: pre-wrap; }
-.pill-btn-small { background: #f1f2f6; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; margin-top: 20px; color: #555; }
+.read-header { margin-bottom: 10px; }
+.badge { background: #ffeaa7; padding: 3px 8px; border-radius: 5px; font-size: 0.8rem; font-weight: bold; color: #d35400; font-family: var(--font-cute); }
+#read-title { font-family: var(--font-cute); font-size: 1.8rem; margin: 10px 0; }
+.read-body p { font-family: var(--font-body); font-size: 1.4rem; line-height: 1.6; white-space: pre-wrap; }
+.pill-btn-small { background: #f1f2f6; border: none; padding: 8px 15px; border-radius: 15px; font-family: var(--font-cute); margin-top: 20px; cursor: pointer; }
 
-/* 모바일 폰트 사이즈 조정 */
+/* 모바일 조정 */
 @media (max-width: 768px) {
-    .main-title { font-size: 2.2rem; }
-    #letter-text { font-size: 1.8rem; }
-    .glass-card { padding: 40px 25px; }
+    .main-title { font-size: 2.5rem; }
+    #letter-text { font-size: 2rem; }
+    .letter-paper { padding: 30px 20px; }
+    .bg-deco span { font-size: 2rem; }
 }
