@@ -19,7 +19,7 @@ const letterContent = [
 
 // 설정 변수
 const READ_SPEED = 180; 
-let isTTSOn = false; // 기본은 꺼짐 (선택 사항)
+let isTTSOn = false; // 기본은 꺼짐
 let currentStep = 0;
 let letterTimer = null;
 let isFinished = false;
@@ -36,7 +36,7 @@ const goToGuestbookBtn = document.getElementById('go-to-guestbook-btn');
 const ttsBtn = document.getElementById('tts-toggle-btn');
 
 // ==========================================
-// 2. 파이어베이스 설정 (연결 완료!)
+// 2. 파이어베이스 설정
 // ==========================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
@@ -60,27 +60,20 @@ try {
 }
 
 // ==========================================
-// 3. 메인 로직 (가족용 바로가기 기능 추가됨)
+// 3. 메인 로직
 // ==========================================
 
 window.onload = () => { 
-    // 모바일 볼륨 설정 에러 방지
     try { audio.volume = 1.0; } catch(e) {}
 
-    // ★ [추가된 부분] 주소창에 #guestbook이 있는지 확인
+    // 가족용 바로가기 체크
     if (window.location.hash === '#guestbook') {
-        // 1. 앞 단계 화면들 모두 숨기기
         introScreen.classList.add('hidden');
         letterScreen.classList.add('hidden');
         transitionScreen.classList.add('hidden');
-        
-        // 2. 방명록 화면 바로 보여주기
         guestbookScreen.classList.remove('hidden');
-        
-        // 3. 데이터 불러오기 및 폭죽
         loadGuestbook();
         safeFireConfetti();
-        
         console.log("가족용 방명록 모드로 진입했습니다.");
     }
 };
@@ -89,27 +82,22 @@ window.onload = () => {
 document.getElementById('start-btn').addEventListener('click', () => {
     introScreen.classList.add('hidden');
     letterScreen.classList.remove('hidden');
-    
-    // 오디오 재생 (실패해도 앱은 계속 작동)
-    audio.play().catch(e => console.log("BGM 자동재생 차단됨 (사용자 터치 필요)"));
-    
+    audio.play().catch(e => console.log("BGM 자동재생 차단됨"));
     setTimeout(showNextSentence, 800);
     safeFireConfetti();
 });
 
-// 건너뛰기 버튼 (모바일 멈춤 해결됨)
+// 건너뛰기 버튼
 skipBtn.addEventListener('click', (e) => {
     e.preventDefault();
     finishLetter();
 });
 
-// ★ TTS(음성) 토글 버튼 (모바일 깨우기 적용)
+// TTS 토글 버튼
 ttsBtn.addEventListener('click', () => {
     isTTSOn = !isTTSOn;
-    
     if (isTTSOn) {
         ttsBtn.innerText = "🔊 소리 끄기";
-        // [중요] 모바일 브라우저 깨우기 (빈 소리 재생)
         if (window.speechSynthesis) {
             window.speechSynthesis.cancel();
             const wakeUp = new SpeechSynthesisUtterance('');
@@ -121,7 +109,6 @@ ttsBtn.addEventListener('click', () => {
     }
 });
 
-// 가족 편지함 가기
 goToGuestbookBtn.addEventListener('click', (e) => {
     e.preventDefault();
     transitionScreen.classList.add('hidden');
@@ -131,7 +118,7 @@ goToGuestbookBtn.addEventListener('click', (e) => {
 });
 
 // ==========================================
-// 4. 편지 진행 함수
+// 4. 편지 진행 함수 (음악 타이밍 수정됨)
 // ==========================================
 function showNextSentence() {
     if (isFinished) return;
@@ -142,33 +129,30 @@ function showNextSentence() {
     }
 
     const item = letterContent[currentStep];
-    
-    // 줄바꿈 처리
     let formattedText = item.text.replace(/\. /g, '.<br>').replace(/\! /g, '!<br>');
 
-    // 텍스트 애니메이션 리셋
     letterText.classList.remove('cloud-text');
     void letterText.offsetWidth; 
     letterText.innerHTML = formattedText;
     letterText.classList.add('cloud-text');
 
-    // ★ 켜져 있을 때만 읽어줌
     if (isTTSOn) speakText(item.text);
 
-    // 다음 대기 시간 계산
     let duration = (item.text.length * READ_SPEED) + 2000;
     if (item.extraDelay) duration += item.extraDelay;
 
-    // 마지막 2문장 남았을 때 음악 서서히 줄이기 시도
-    if (currentStep >= letterContent.length - 2) safeFadeOutAudio();
-    
-    // 마지막 문장: 버튼 변경
+    // ★ [수정] 음악이 너무 빨리 꺼지지 않도록 기존 코드 삭제함
+    // if (currentStep >= letterContent.length - 2) safeFadeOutAudio(); <- 삭제!
+
+    // 마지막 문장일 때
     if (currentStep === letterContent.length - 1) {
+        // ★ [추가] 이제서야 음악을 천천히 줄이기 시작
+        safeFadeOutAudio();
+
         skipBtn.innerHTML = "👨‍👩‍👧‍👦 가족 편지 보러가기 >>";
         skipBtn.classList.add("btn-pulse");
         skipBtn.style.zIndex = "99999"; 
         
-        // 5초 뒤 강제 이동 (안전장치)
         setTimeout(() => { if (!isFinished) finishLetter(); }, duration + 4000);
     }
 
@@ -177,35 +161,30 @@ function showNextSentence() {
     letterTimer = setTimeout(showNextSentence, duration);
 }
 
-// 편지 종료 및 화면 전환
 function finishLetter() {
     if (isFinished) return;
     isFinished = true;
-
-    // 1. 화면 전환부터 먼저 (UX 우선)
     letterScreen.classList.add('hidden');
     transitionScreen.classList.remove('hidden');
-    
-    // 2. 타이머 정리
     if (letterTimer) clearTimeout(letterTimer);
-    
-    // 3. 부가 기능 정리 (에러 무시)
     try {
         if (window.speechSynthesis) window.speechSynthesis.cancel();
-        safeFadeOutAudio();
+        // 혹시 아직 안 줄어들었으면 여기서 확실히 줄임
+        safeFadeOutAudio(); 
         safeFireConfetti();
     } catch (e) {}
 }
 
-// 오디오 페이드아웃 (모바일 안전 버전)
+// 오디오 페이드아웃 (천천히 부드럽게 수정됨)
 function safeFadeOutAudio() {
     try {
         if (typeof audio.volume !== 'number') { audio.pause(); return; }
         
+        // ★ [수정] 0.1씩 팍팍 줄이는 게 아니라 0.05씩 아주 천천히 줄임
         const fadeAudio = setInterval(() => {
             try {
-                if (audio.volume > 0.1) {
-                    audio.volume -= 0.1;
+                if (audio.volume > 0.05) {
+                    audio.volume -= 0.05; // 아주 조금씩 줄임
                 } else {
                     audio.pause();
                     clearInterval(fadeAudio);
@@ -214,29 +193,22 @@ function safeFadeOutAudio() {
                 audio.pause();
                 clearInterval(fadeAudio);
             }
-        }, 200);
+        }, 400); // ★ [수정] 시간 간격도 0.2초 -> 0.4초로 늘림 (훨씬 오래 유지됨)
     } catch (e) { audio.pause(); }
 }
 
-// TTS 말하기 함수 (안전 버전)
+// TTS 말하기 함수
 function speakText(text) {
     if (!window.speechSynthesis) return; 
-
-    // 기존 대기열 제거
     window.speechSynthesis.cancel();
-
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ko-KR'; 
     utterance.rate = 0.9; 
     utterance.pitch = 1.0; 
-    
-    // 모바일 끊김 방지용 빈 핸들러
     utterance.onerror = (e) => {}; 
-    
     window.speechSynthesis.speak(utterance);
 }
 
-// 폭죽 함수
 function safeFireConfetti() {
     try {
         confetti({
@@ -261,18 +233,13 @@ document.querySelectorAll('.close-btn, .close-read-btn').forEach(btn => {
     });
 });
 
-// 저장 버튼
 document.getElementById('save-btn').addEventListener('click', async () => {
     const name = document.getElementById('input-name').value;
     const title = document.getElementById('input-title').value;
     const message = document.getElementById('input-message').value;
 
     if (!name || !message) { alert("내용을 입력해주세요!"); return; }
-
-    if (!db) {
-        alert("DB 연결 실패. 콘솔을 확인해주세요.");
-        return;
-    }
+    if (!db) { alert("DB 연결 실패"); return; }
     
     try {
         await addDoc(collection(db, "letters"), {
@@ -280,62 +247,41 @@ document.getElementById('save-btn').addEventListener('click', async () => {
         });
         alert("저장되었습니다! 📌");
         writeModal.classList.add('hidden');
-        loadGuestbook(); // 목록 새로고침
-        
-        // 입력창 비우기
+        loadGuestbook(); 
         document.getElementById('input-name').value = ''; 
         document.getElementById('input-title').value = '';
         document.getElementById('input-message').value = '';
-    } catch (e) { 
-        alert("저장 실패: " + e.message); 
-    }
+    } catch (e) { alert("저장 실패: " + e.message); }
 });
 
-// 방명록 불러오기
 async function loadGuestbook() {
     const container = document.getElementById('guestbook-container');
-    container.innerHTML = ''; // 초기화
-    
+    container.innerHTML = ''; 
     if (!db) return;
-    
     try {
         const q = query(collection(db, "letters"), orderBy("date", "desc"));
         const querySnapshot = await getDocs(q);
-        
         if (querySnapshot.empty) {
-            container.innerHTML = '<div style="text-align:center; color:#666; width:100%; padding:20px;">아직 편지가 없어요.<br>첫 번째 편지를 남겨보세요!</div>';
+            container.innerHTML = '<div style="text-align:center; color:#666; width:100%; padding:20px;">아직 편지가 없어요.</div>';
             return;
         }
-
         querySnapshot.forEach((doc) => addCardToScreen(doc.data()));
-    } catch(e) {
-        console.log("불러오기 에러:", e);
-    }
+    } catch(e) {}
 }
 
-// 카드 생성 및 읽기 모달 연결
 function addCardToScreen(data) {
     const container = document.getElementById('guestbook-container');
     const div = document.createElement('div');
     div.className = 'card-item'; 
-    div.innerHTML = `
-        <div class="card-title">${data.title || '축하해요!'}</div>
-        <div class="card-name">From. ${data.name}</div>
-    `;
+    div.innerHTML = `<div class="card-title">${data.title || '축하해요!'}</div><div class="card-name">From. ${data.name}</div>`;
     
     div.addEventListener('click', () => {
         document.getElementById('read-title').innerText = data.title;
         document.getElementById('read-name').innerText = data.name;
         document.getElementById('read-message').innerText = data.message;
-        
-        // ★ [핵심] 모달 안에서 '읽어주기' 누르면 즉시 재생
         const readTtsBtn = document.getElementById('read-tts-btn');
-        readTtsBtn.onclick = () => {
-            speakText(data.message);
-        };
-        
+        readTtsBtn.onclick = () => { speakText(data.message); };
         readModal.classList.remove('hidden');
     });
-    
     container.appendChild(div);
 }
