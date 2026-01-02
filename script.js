@@ -60,12 +60,29 @@ try {
 }
 
 // ==========================================
-// 3. 메인 로직
+// 3. 메인 로직 (가족용 바로가기 기능 추가됨)
 // ==========================================
 
 window.onload = () => { 
     // 모바일 볼륨 설정 에러 방지
     try { audio.volume = 1.0; } catch(e) {}
+
+    // ★ [추가된 부분] 주소창에 #guestbook이 있는지 확인
+    if (window.location.hash === '#guestbook') {
+        // 1. 앞 단계 화면들 모두 숨기기
+        introScreen.classList.add('hidden');
+        letterScreen.classList.add('hidden');
+        transitionScreen.classList.add('hidden');
+        
+        // 2. 방명록 화면 바로 보여주기
+        guestbookScreen.classList.remove('hidden');
+        
+        // 3. 데이터 불러오기 및 폭죽
+        loadGuestbook();
+        safeFireConfetti();
+        
+        console.log("가족용 방명록 모드로 진입했습니다.");
+    }
 };
 
 // 시작 버튼
