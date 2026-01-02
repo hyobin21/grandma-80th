@@ -42,7 +42,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebas
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    // 본인의 API Key 입력 필요
+  apiKey: "AIzaSyBePub3a6FbLeAwnQhTbDlj6KGtenE2l9A",
+  authDomain: "grandma-80-39e4b.firebaseapp.com",
+  projectId: "grandma-80-39e4b",
+  storageBucket: "grandma-80-39e4b.firebasestorage.app",
+  messagingSenderId: "175402158690",
+  appId: "1:175402158690:web:b2dc59e9a34f16c6c7df3b"
 };
 
 let db;
