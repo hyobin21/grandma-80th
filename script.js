@@ -19,10 +19,11 @@ const letterContent = [
 
 // 설정 변수
 const READ_SPEED = 180; 
-let isTTSOn = false; // 기본은 꺼짐 (선택 사항)
+let isTTSOn = false; 
 let currentStep = 0;
 let letterTimer = null;
 let isFinished = false;
+let g_utterance = null; // ★ 중요: 말하는 객체가 사라지지 않게 전역 변수로 잡음
 
 // DOM 요소
 const introScreen = document.getElementById('intro-screen');
@@ -36,7 +37,7 @@ const goToGuestbookBtn = document.getElementById('go-to-guestbook-btn');
 const ttsBtn = document.getElementById('tts-toggle-btn');
 
 // ==========================================
-// 2. 파이어베이스 설정 (연결 완료!)
+// 2. 파이어베이스 설정
 // ==========================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
@@ -54,64 +55,64 @@ let db;
 try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-    console.log("파이어베이스 연결 성공!");
 } catch (e) { 
     console.log("DB 연결 오류:", e); 
 }
 
 // ==========================================
-// 3. 메인 로직 (가족용 바로가기 기능 추가됨)
+// 3. 메인 로직
 // ==========================================
 
+// ★ 목소리 로딩 (모바일은 비동기로 불러옴)
+let voices = [];
+function setVoiceList() {
+    voices = window.speechSynthesis.getVoices();
+}
+setVoiceList();
+if (window.speechSynthesis.onvoiceschanged !== undefined) {
+    window.speechSynthesis.onvoiceschanged = setVoiceList;
+}
+
 window.onload = () => { 
-    // 모바일 볼륨 설정 에러 방지
     try { audio.volume = 1.0; } catch(e) {}
 
-    // ★ [추가된 부분] 주소창에 #guestbook이 있는지 확인
+    // 가족용 바로가기 체크
     if (window.location.hash === '#guestbook') {
-        // 1. 앞 단계 화면들 모두 숨기기
         introScreen.classList.add('hidden');
         letterScreen.classList.add('hidden');
         transitionScreen.classList.add('hidden');
-        
-        // 2. 방명록 화면 바로 보여주기
         guestbookScreen.classList.remove('hidden');
-        
-        // 3. 데이터 불러오기 및 폭죽
         loadGuestbook();
         safeFireConfetti();
-        
-        console.log("가족용 방명록 모드로 진입했습니다.");
     }
 };
 
-// 시작 버튼
 document.getElementById('start-btn').addEventListener('click', () => {
     introScreen.classList.add('hidden');
     letterScreen.classList.remove('hidden');
-    
-    // 오디오 재생 (실패해도 앱은 계속 작동)
-    audio.play().catch(e => console.log("BGM 자동재생 차단됨 (사용자 터치 필요)"));
-    
+    audio.play().catch(e => console.log("BGM 자동재생 차단됨"));
     setTimeout(showNextSentence, 800);
     safeFireConfetti();
 });
 
-// 건너뛰기 버튼 (모바일 멈춤 해결됨)
 skipBtn.addEventListener('click', (e) => {
     e.preventDefault();
     finishLetter();
 });
 
-// ★ TTS(음성) 토글 버튼 (모바일 깨우기 적용)
+// ★ TTS 버튼 클릭 시 (강력한 깨우기)
 ttsBtn.addEventListener('click', () => {
     isTTSOn = !isTTSOn;
     
     if (isTTSOn) {
         ttsBtn.innerText = "🔊 소리 끄기";
-        // [중요] 모바일 브라우저 깨우기 (빈 소리 재생)
+        
+        // 브라우저 깨우기 및 Resume(재개) 시도
         if (window.speechSynthesis) {
             window.speechSynthesis.cancel();
+            window.speechSynthesis.resume(); // 멈춘 엔진 깨우기
+            
+            // 빈 소리 재생으로 락 해제
             const wakeUp = new SpeechSynthesisUtterance('');
             window.speechSynthesis.speak(wakeUp);
         }
@@ -121,7 +122,6 @@ ttsBtn.addEventListener('click', () => {
     }
 });
 
-// 가족 편지함 가기
 goToGuestbookBtn.addEventListener('click', (e) => {
     e.preventDefault();
     transitionScreen.classList.add('hidden');
@@ -142,33 +142,24 @@ function showNextSentence() {
     }
 
     const item = letterContent[currentStep];
-    
-    // 줄바꿈 처리
     let formattedText = item.text.replace(/\. /g, '.<br>').replace(/\! /g, '!<br>');
 
-    // 텍스트 애니메이션 리셋
     letterText.classList.remove('cloud-text');
     void letterText.offsetWidth; 
     letterText.innerHTML = formattedText;
     letterText.classList.add('cloud-text');
 
-    // ★ 켜져 있을 때만 읽어줌
     if (isTTSOn) speakText(item.text);
 
-    // 다음 대기 시간 계산
     let duration = (item.text.length * READ_SPEED) + 2000;
     if (item.extraDelay) duration += item.extraDelay;
 
-    // 마지막 2문장 남았을 때 음악 서서히 줄이기 시도
     if (currentStep >= letterContent.length - 2) safeFadeOutAudio();
     
-    // 마지막 문장: 버튼 변경
     if (currentStep === letterContent.length - 1) {
         skipBtn.innerHTML = "👨‍👩‍👧‍👦 가족 편지 보러가기 >>";
         skipBtn.classList.add("btn-pulse");
         skipBtn.style.zIndex = "99999"; 
-        
-        // 5초 뒤 강제 이동 (안전장치)
         setTimeout(() => { if (!isFinished) finishLetter(); }, duration + 4000);
     }
 
@@ -177,19 +168,12 @@ function showNextSentence() {
     letterTimer = setTimeout(showNextSentence, duration);
 }
 
-// 편지 종료 및 화면 전환
 function finishLetter() {
     if (isFinished) return;
     isFinished = true;
-
-    // 1. 화면 전환부터 먼저 (UX 우선)
     letterScreen.classList.add('hidden');
     transitionScreen.classList.remove('hidden');
-    
-    // 2. 타이머 정리
     if (letterTimer) clearTimeout(letterTimer);
-    
-    // 3. 부가 기능 정리 (에러 무시)
     try {
         if (window.speechSynthesis) window.speechSynthesis.cancel();
         safeFadeOutAudio();
@@ -197,46 +181,53 @@ function finishLetter() {
     } catch (e) {}
 }
 
-// 오디오 페이드아웃 (모바일 안전 버전)
 function safeFadeOutAudio() {
     try {
         if (typeof audio.volume !== 'number') { audio.pause(); return; }
-        
         const fadeAudio = setInterval(() => {
             try {
-                if (audio.volume > 0.1) {
-                    audio.volume -= 0.1;
-                } else {
-                    audio.pause();
-                    clearInterval(fadeAudio);
-                }
-            } catch (e) {
-                audio.pause();
-                clearInterval(fadeAudio);
-            }
+                if (audio.volume > 0.1) audio.volume -= 0.1;
+                else { audio.pause(); clearInterval(fadeAudio); }
+            } catch (e) { audio.pause(); clearInterval(fadeAudio); }
         }, 200);
     } catch (e) { audio.pause(); }
 }
 
-// TTS 말하기 함수 (안전 버전)
+// ★ [핵심 수정] 말하기 함수 (모바일 호환성 강화)
 function speakText(text) {
     if (!window.speechSynthesis) return; 
 
-    // 기존 대기열 제거
-    window.speechSynthesis.cancel();
+    window.speechSynthesis.cancel(); // 큐 비우기
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ko-KR'; 
-    utterance.rate = 0.9; 
-    utterance.pitch = 1.0; 
+    // 전역 변수에 할당 (가비지 컬렉션 방지)
+    g_utterance = new SpeechSynthesisUtterance(text);
     
-    // 모바일 끊김 방지용 빈 핸들러
-    utterance.onerror = (e) => {}; 
+    // ★ 1. 한국어 목소리 강제 찾기
+    const korVoice = voices.find(v => v.lang.includes('ko') || v.lang.includes('KR'));
+    if (korVoice) {
+        g_utterance.voice = korVoice;
+    }
     
-    window.speechSynthesis.speak(utterance);
+    // 기본 설정
+    g_utterance.lang = 'ko-KR'; 
+    g_utterance.rate = 0.9; 
+    g_utterance.pitch = 1.0; 
+    
+    // ★ 2. 에러 핸들링
+    g_utterance.onerror = (e) => {
+        console.log("TTS 오류:", e);
+        window.speechSynthesis.cancel(); // 에러나면 리셋
+    };
+    
+    // ★ 3. 안드로이드/크롬 멈춤 방지용 타이머
+    g_utterance.onstart = () => {
+        // 말하기 시작하면 엔진을 계속 깨움
+        if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+    };
+
+    window.speechSynthesis.speak(g_utterance);
 }
 
-// 폭죽 함수
 function safeFireConfetti() {
     try {
         confetti({
@@ -261,7 +252,6 @@ document.querySelectorAll('.close-btn, .close-read-btn').forEach(btn => {
     });
 });
 
-// 저장 버튼
 document.getElementById('save-btn').addEventListener('click', async () => {
     const name = document.getElementById('input-name').value;
     const title = document.getElementById('input-title').value;
@@ -269,10 +259,7 @@ document.getElementById('save-btn').addEventListener('click', async () => {
 
     if (!name || !message) { alert("내용을 입력해주세요!"); return; }
 
-    if (!db) {
-        alert("DB 연결 실패. 콘솔을 확인해주세요.");
-        return;
-    }
+    if (!db) { alert("DB 연결 실패"); return; }
     
     try {
         await addDoc(collection(db, "letters"), {
@@ -280,62 +267,41 @@ document.getElementById('save-btn').addEventListener('click', async () => {
         });
         alert("저장되었습니다! 📌");
         writeModal.classList.add('hidden');
-        loadGuestbook(); // 목록 새로고침
-        
-        // 입력창 비우기
+        loadGuestbook(); 
         document.getElementById('input-name').value = ''; 
         document.getElementById('input-title').value = '';
         document.getElementById('input-message').value = '';
-    } catch (e) { 
-        alert("저장 실패: " + e.message); 
-    }
+    } catch (e) { alert("저장 실패: " + e.message); }
 });
 
-// 방명록 불러오기
 async function loadGuestbook() {
     const container = document.getElementById('guestbook-container');
-    container.innerHTML = ''; // 초기화
-    
+    container.innerHTML = ''; 
     if (!db) return;
-    
     try {
         const q = query(collection(db, "letters"), orderBy("date", "desc"));
         const querySnapshot = await getDocs(q);
-        
         if (querySnapshot.empty) {
-            container.innerHTML = '<div style="text-align:center; color:#666; width:100%; padding:20px;">아직 편지가 없어요.<br>첫 번째 편지를 남겨보세요!</div>';
+            container.innerHTML = '<div style="text-align:center; color:#666; width:100%; padding:20px;">아직 편지가 없어요.</div>';
             return;
         }
-
         querySnapshot.forEach((doc) => addCardToScreen(doc.data()));
-    } catch(e) {
-        console.log("불러오기 에러:", e);
-    }
+    } catch(e) {}
 }
 
-// 카드 생성 및 읽기 모달 연결
 function addCardToScreen(data) {
     const container = document.getElementById('guestbook-container');
     const div = document.createElement('div');
     div.className = 'card-item'; 
-    div.innerHTML = `
-        <div class="card-title">${data.title || '축하해요!'}</div>
-        <div class="card-name">From. ${data.name}</div>
-    `;
+    div.innerHTML = `<div class="card-title">${data.title || '축하해요!'}</div><div class="card-name">From. ${data.name}</div>`;
     
     div.addEventListener('click', () => {
         document.getElementById('read-title').innerText = data.title;
         document.getElementById('read-name').innerText = data.name;
         document.getElementById('read-message').innerText = data.message;
-        
-        // ★ [핵심] 모달 안에서 '읽어주기' 누르면 즉시 재생
         const readTtsBtn = document.getElementById('read-tts-btn');
-        readTtsBtn.onclick = () => {
-            speakText(data.message);
-        };
-        
+        readTtsBtn.onclick = () => { speakText(data.message); };
         readModal.classList.remove('hidden');
     });
-    
     container.appendChild(div);
 }
